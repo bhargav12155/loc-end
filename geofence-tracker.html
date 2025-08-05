@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Tracker - Auto Reporting</title>
+
+    <!-- Ionic CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#3880ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="GeoTracker">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png"
+        href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKFSURBVFiFtZc9aBRBFMd/s2t2k91kE1sLwcJCG1sLG1sLbW0tLCwsLGwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsVFiFtZc9aBRBFMd/s2t2k91kE1sLwcJCG1sLG1sLbW0tLCwsLGwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsVFiFtZc9aBRBFMd/s2t2k91kE1sLwcJCG1sLG1sLbW0tLCwsLGwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsVFiFtZc9aBRBFMd/s2t2k91kE1sLwcJCG1sLG1sLbW0tLCwsLGwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsdKFSURBVFiFvdw=="
+        sizes="32x32">
+
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #3880ff, #4f93ff);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Status Card */
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e5e9;
+        }
+
+        .status-card h2 {
+            color: #2d3748;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: inline-block;
+        }
+
+        .status-indicator.active {
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .location-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .info-item {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #3880ff;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            color: #1a202c;
+            font-weight: 600;
+        }
+
+        /* Button Styles */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3880ff, #4f93ff);
+            color: white;
+            box-shadow: 0 4px 15px rgba(56, 128, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 128, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Map Container */
+        .map-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+
+        /* Activity Log */
+        .activity-log {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e5e9;
+        }
+
+        .activity-log h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #activity-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 10px;
+            border-left: 3px solid #e2e8f0;
+            margin-bottom: 8px;
+            background: #f8fafc;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .activity-item.location {
+            border-left-color: #3880ff;
+        }
+
+        .activity-item.geofence {
+            border-left-color: #10b981;
+        }
+
+        .activity-item.alert {
+            border-left-color: #f59e0b;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+
+        .activity-text {
+            color: #2d3748;
+            font-size: 0.9rem;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3880ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                min-width: auto;
+            }
+
+            .location-info {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 300px;
+            }
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        /* QR Code Section */
+        .qr-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e5e9;
+            text-align: center;
+        }
+
+        .qr-section h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .qr-section p {
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .share-url {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            resize: vertical;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            max-height: 200px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3880ff;
+            box-shadow: 0 0 0 3px rgba(56, 128, 255, 0.1);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        /* Form validation styles */
+        .form-group input:invalid,
+        .form-group textarea:invalid {
+            border-color: #e53e3e;
+        }
+
+        .form-group input:valid,
+        .form-group textarea:valid {
+            border-color: #38a169;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>� Location Tracker</h1>
+        <p>Automatic location monitoring and reporting</p>
+    </div>
+
+    <div class="container">
+        <!-- Configuration Notice -->
+        <div class="status-card" style="border-left: 4px solid #f59e0b;">
+            <h2>⚙️ Configuration Required</h2>
+            <p><strong>Before deploying:</strong> Edit this file and update the CONFIG section in the JavaScript with:
+            </p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li><strong>API_ENDPOINT:</strong> Your backend server URL</li>
+                <li><strong>GEOFENCES:</strong> Your predefined geofence locations</li>
+                <li><strong>USER_ID:</strong> How to identify users (URL parameter, etc.)</li>
+            </ul>
+            <p><em>This section can be removed after configuration.</em></p>
+        </div>
+
+        <!-- QR Code Sharing Section -->
+        <div class="qr-section">
+            <h3>📱 Share This Tracker</h3>
+            <p>Send this link to users who need to be tracked: <strong>?userId=USERNAME</strong></p>
+            <div class="share-url" id="shareUrl">Loading URL...</div>
+            <div id="qrcode" style="margin: 15px 0;"></div>
+            <button class="btn btn-primary" onclick="copyUrl()">📋 Copy URL</button>
+        </div>
+
+        <!-- Feedback Form -->
+        <div class="status-card">
+            <h2>📝 Visitor Feedback</h2>
+            <p><em>Questions for Feedback</em></p>
+
+            <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                <div class="form-group">
+                    <label for="question1">1) What are your overall impressions of the property?</label>
+                    <textarea id="question1" name="question1" placeholder="Please share your thoughts..."
+                        required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="question2">2) What did you like most about the property?</label>
+                    <textarea id="question2" name="question2" placeholder="What stood out to you..."
+                        required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="question3">3) What did you like least?</label>
+                    <textarea id="question3" name="question3" placeholder="Any concerns or dislikes..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="question4">4) What do you think of the price?</label>
+                    <textarea id="question4" name="question4" placeholder="Your thoughts on pricing..."
+                        required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="question5">5) Do you have any potential buyers?</label>
+                    <textarea id="question5" name="question5"
+                        placeholder="Any interested parties or referrals..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="visitorName">Your Name (Optional):</label>
+                    <input type="text" id="visitorName" name="visitorName" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="visitorEmail">Your Email (Optional):</label>
+                    <input type="email" id="visitorEmail" name="visitorEmail" placeholder="Enter your email">
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">
+                        📤 Submit Feedback
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        🔄 Clear Form
+                    </button>
+                </div>
+            </form>
+
+            <div id="feedbackStatus"></div>
+        </div>
+
+        <!-- Status Card -->
+        <div class="status-card">
+            <h2>
+                <span class="status-indicator" id="statusIndicator"></span>
+                Location Status
+            </h2>
+
+            <div class="location-info">
+                <div class="info-item">
+                    <div class="info-label">Latitude</div>
+                    <div class="info-value" id="currentLat">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Longitude</div>
+                    <div class="info-value" id="currentLng">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Accuracy</div>
+                    <div class="info-value" id="accuracy">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Last Updated</div>
+                    <div class="info-value" id="lastUpdate">Never</div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="getCurrentLocation()">
+                    <span class="spinner" id="locationSpinner"></span>
+                    📍 Get Location Now
+                </button>
+                <button class="btn btn-secondary" onclick="toggleTracking()" id="trackingBtn">
+                    🔄 Toggle Auto-Tracking
+                </button>
+                <button class="btn btn-danger" onclick="stopLocationTracking()" id="stopBtn">
+                    ⏹️ Stop Tracking
+                </button>
+            </div>
+
+            <div id="messageArea"></div>
+        </div>
+
+        <!-- Map -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="activity-log">
+            <h3>📊 Activity Log</h3>
+            <div id="activity-list">
+                <div class="activity-item info">
+                    <div class="activity-time">Just now</div>
+                    <div class="activity-text">App initialized - Ready to track location</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js" type="module"></script>
+
+    <script>
+        // Configuration - CHANGE THESE VALUES
+        const CONFIG = {
+            // Backend endpoints - UPDATE THESE WITH YOUR ACTUAL URLS
+            API_ENDPOINT: 'https://your-backend.com/api/location',
+            GEOFENCE_ENDPOINT: 'https://your-backend.com/api/geofence-alert',
+            FEEDBACK_ENDPOINT: 'https://your-backend.com/api/feedback',
+
+            // Geofence definitions - UPDATE WITH YOUR ACTUAL LOCATIONS
+            GEOFENCES: [
+                {
+                    id: 'office',
+                    name: 'Office Building',
+                    lat: 37.7749,
+                    lng: -122.4194,
+                    radius: 100 // meters
+                },
+                {
+                    id: 'warehouse',
+                    name: 'Warehouse',
+                    lat: 37.7849,
+                    lng: -122.4094,
+                    radius: 150
+                }
+                // Add more geofences as needed
+            ],
+
+            // How often to check location (in milliseconds)
+            UPDATE_INTERVAL: 30000, // 30 seconds
+
+            // User identification (you can set this dynamically)
+            USER_ID: new URLSearchParams(window.location.search).get('userId') || 'anonymous',
+
+            // Enable/disable automatic tracking
+            AUTO_TRACK: true
+        };
+
+        // Global variables
+        let map;
+        let userMarker;
+        let geofenceCircles = [];
+        let currentLocation = null;
+        let watchId = null;
+        let trackingActive = false;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            // Initialize map
+            initializeMap();
+
+            // Set up sharing URL
+            setupSharingUrl();
+
+            // Load predefined geofences
+            loadGeofences();
+
+            // Log initialization
+            addToActivityLog('App initialized successfully', 'info');
+            addToActivityLog(`User ID: ${CONFIG.USER_ID}`, 'info');
+
+            // Check for geolocation support
+            if (!navigator.geolocation) {
+                showMessage('Geolocation is not supported by this browser', 'error');
+                addToActivityLog('Geolocation not supported', 'alert');
+                return;
+            }
+
+            addToActivityLog('Geolocation API available', 'info');
+
+            // Auto-start tracking if enabled
+            if (CONFIG.AUTO_TRACK) {
+                setTimeout(() => {
+                    startLocationTracking();
+                }, 2000); // Wait 2 seconds then start
+            }
+        }
+
+        function initializeMap() {
+            // Initialize Leaflet map
+            map = L.map('map').setView([37.7749, -122.4194], 13);
+
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            addToActivityLog('Map initialized', 'info');
+        }
+
+        function loadGeofences() {
+            // Clear existing geofences
+            geofenceCircles.forEach(circle => map.removeLayer(circle));
+            geofenceCircles = [];
+
+            // Add predefined geofences to map
+            CONFIG.GEOFENCES.forEach(geofence => {
+                const circle = L.circle([geofence.lat, geofence.lng], {
+                    color: '#10b981',
+                    fillColor: '#10b981',
+                    fillOpacity: 0.1,
+                    radius: geofence.radius
+                }).addTo(map);
+
+                geofenceCircles.push(circle);
+
+                // Add geofence marker
+                L.marker([geofence.lat, geofence.lng], {
+                    icon: L.divIcon({
+                        html: '🎯',
+                        iconSize: [30, 30],
+                        className: 'geofence-marker'
+                    })
+                }).addTo(map)
+                    .bindPopup(`${geofence.name}<br>Radius: ${geofence.radius}m`);
+            });
+
+            addToActivityLog(`Loaded ${CONFIG.GEOFENCES.length} geofences`, 'geofence');
+        }
+
+        function startLocationTracking() {
+            if (trackingActive) return;
+
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 5000
+            };
+
+            // Start continuous location tracking
+            watchId = navigator.geolocation.watchPosition(
+                handleLocationUpdate,
+                handleLocationError,
+                options
+            );
+
+            trackingActive = true;
+            document.getElementById('statusIndicator').classList.add('active');
+            addToActivityLog('🔄 Auto-tracking started', 'location');
+            showMessage('Location tracking started automatically', 'success');
+        }
+
+        function stopLocationTracking() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+            trackingActive = false;
+            document.getElementById('statusIndicator').classList.remove('active');
+            addToActivityLog('⏹️ Tracking stopped', 'location');
+        }
+
+        function handleLocationUpdate(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = Math.round(position.coords.accuracy);
+            const timestamp = new Date().toISOString();
+
+            currentLocation = { lat, lng, accuracy, timestamp };
+
+            // Update UI
+            document.getElementById('currentLat').textContent = lat.toFixed(6);
+            document.getElementById('currentLng').textContent = lng.toFixed(6);
+            document.getElementById('accuracy').textContent = `±${accuracy}m`;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+
+            // Update map
+            updateMapLocation(lat, lng, accuracy);
+
+            // Check all geofences
+            checkAllGeofences(lat, lng, timestamp);
+
+            // Send location data to backend
+            sendLocationToBackend({
+                userId: CONFIG.USER_ID,
+                lat: lat,
+                lng: lng,
+                accuracy: accuracy,
+                timestamp: timestamp
+            });
+        }
+
+        function checkAllGeofences(lat, lng, timestamp) {
+            CONFIG.GEOFENCES.forEach(geofence => {
+                const distance = calculateDistance(lat, lng, geofence.lat, geofence.lng);
+                const isInside = distance <= geofence.radius;
+                const wasInside = geofence.userInside || false;
+
+                if (isInside && !wasInside) {
+                    // User entered geofence
+                    geofence.userInside = true;
+                    handleGeofenceEntry(geofence, { lat, lng, distance, timestamp });
+                } else if (!isInside && wasInside) {
+                    // User exited geofence
+                    geofence.userInside = false;
+                    handleGeofenceExit(geofence, { lat, lng, distance, timestamp });
+                }
+            });
+        }
+
+        function handleGeofenceEntry(geofence, locationData) {
+            const message = `🎯 ENTERED: ${geofence.name}`;
+            showMessage(message, 'success');
+            addToActivityLog(message, 'geofence');
+
+            // Send geofence entry alert to backend
+            sendGeofenceAlert({
+                userId: CONFIG.USER_ID,
+                geofenceId: geofence.id,
+                geofenceName: geofence.name,
+                action: 'ENTER',
+                lat: locationData.lat,
+                lng: locationData.lng,
+                distance: Math.round(locationData.distance),
+                timestamp: locationData.timestamp
+            });
+        }
+
+        function handleGeofenceExit(geofence, locationData) {
+            const message = `↩️ EXITED: ${geofence.name}`;
+            showMessage(message, 'info');
+            addToActivityLog(message, 'alert');
+
+            // Send geofence exit alert to backend
+            sendGeofenceAlert({
+                userId: CONFIG.USER_ID,
+                geofenceId: geofence.id,
+                geofenceName: geofence.name,
+                action: 'EXIT',
+                lat: locationData.lat,
+                lng: locationData.lng,
+                distance: Math.round(locationData.distance),
+                timestamp: locationData.timestamp
+            });
+        }
+
+        async function sendLocationToBackend(locationData) {
+            try {
+                const response = await fetch(CONFIG.API_ENDPOINT + '/location', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(locationData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Optionally log successful sends (comment out to reduce noise)
+                // addToActivityLog(`📡 Location sent to backend`, 'info');
+
+            } catch (error) {
+                console.error('Failed to send location to backend:', error);
+                addToActivityLog(`❌ Failed to send location: ${error.message}`, 'alert');
+            }
+        }
+
+        async function sendGeofenceAlert(alertData) {
+            try {
+                const response = await fetch(CONFIG.API_ENDPOINT + '/geofence-alert', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(alertData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                addToActivityLog(`🚨 Geofence alert sent to backend`, 'geofence');
+
+            } catch (error) {
+                console.error('Failed to send geofence alert:', error);
+                addToActivityLog(`❌ Failed to send alert: ${error.message}`, 'alert');
+
+                // Fallback: try to send via webhook or email
+                tryFallbackAlert(alertData);
+            }
+        }
+
+        function tryFallbackAlert(alertData) {
+            // You can implement fallback methods here:
+            // 1. Email API
+            // 2. SMS API  
+            // 3. Webhook service
+            // 4. Local storage for retry later
+
+            console.log('Fallback alert:', alertData);
+            addToActivityLog(`💾 Alert saved for retry`, 'info');
+        }
+
+        function setupSharingUrl() {
+            const currentUrl = window.location.href;
+            const shareUrlElement = document.getElementById('shareUrl');
+            shareUrlElement.textContent = currentUrl;
+
+            // Generate QR code
+            QRCode.toCanvas(document.createElement('canvas'), currentUrl, {
+                width: 200,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            }, function (error, canvas) {
+                if (!error) {
+                    const qrContainer = document.getElementById('qrcode');
+                    qrContainer.innerHTML = '';
+                    qrContainer.appendChild(canvas);
+                }
+            });
+        }
+
+        function getCurrentLocation() {
+            const spinner = document.getElementById('locationSpinner');
+            const statusIndicator = document.getElementById('statusIndicator');
+
+            if (!navigator.geolocation) {
+                showMessage('Geolocation is not supported by this browser', 'error');
+                return;
+            }
+
+            // Show loading
+            spinner.style.display = 'inline-block';
+
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            };
+
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    handleLocationUpdate(position);
+                    spinner.style.display = 'none';
+                },
+                function (error) {
+                    handleLocationError(error);
+                    spinner.style.display = 'none';
+                },
+                options
+            );
+
+            addToActivityLog('📍 Manual location request...', 'location');
+        }
+
+        function handleLocationSuccess(position) {
+            // This function is kept for backward compatibility
+            // but now we use handleLocationUpdate for all location processing
+            handleLocationUpdate(position);
+        }
+
+        function handleLocationError(error) {
+            let message = 'Location error: ';
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    message += 'User denied location access';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message += 'Location information unavailable';
+                    break;
+                case error.TIMEOUT:
+                    message += 'Location request timed out';
+                    break;
+                default:
+                    message += 'Unknown error occurred';
+                    break;
+            }
+
+            showMessage(message, 'error');
+            addToActivityLog(message, 'alert');
+        }
+
+        function updateMapLocation(lat, lng, accuracy) {
+            // Remove existing marker
+            if (userMarker) {
+                map.removeLayer(userMarker);
+            }
+
+            // Add new marker
+            userMarker = L.marker([lat, lng])
+                .addTo(map)
+                .bindPopup(`Your Location<br>Accuracy: ±${accuracy}m<br>Time: ${new Date().toLocaleTimeString()}`)
+                .openPopup();
+
+            // Center map on location (only on first location or manual request)
+            if (!trackingActive || currentLocation === null) {
+                map.setView([lat, lng], 16);
+            }
+
+            // Add accuracy circle
+            L.circle([lat, lng], {
+                color: '#3880ff',
+                fillColor: '#3880ff',
+                fillOpacity: 0.1,
+                radius: accuracy
+            }).addTo(map);
+        }
+
+        function toggleTracking() {
+            if (trackingActive) {
+                stopLocationTracking();
+            } else {
+                startLocationTracking();
+            }
+        }
+
+        // Remove the old geofence functions and replace with these
+        // (These are kept for any legacy references but are no longer used)
+
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371000; // Earth's radius in meters
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function showMessage(text, type) {
+            const messageArea = document.getElementById('messageArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+
+            messageArea.innerHTML = '';
+            messageArea.appendChild(messageDiv);
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 5000);
+        }
+
+        function addToActivityLog(text, type = 'info') {
+            const activityList = document.getElementById('activity-list');
+            const activityItem = document.createElement('div');
+            activityItem.className = `activity-item ${type}`;
+
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'activity-time';
+            timeDiv.textContent = new Date().toLocaleTimeString();
+
+            const textDiv = document.createElement('div');
+            textDiv.className = 'activity-text';
+            textDiv.textContent = text;
+
+            activityItem.appendChild(timeDiv);
+            activityItem.appendChild(textDiv);
+
+            // Add to top of list
+            activityList.insertBefore(activityItem, activityList.firstChild);
+
+            // Limit to 20 items
+            while (activityList.children.length > 20) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+
+        function copyUrl() {
+            const shareUrl = document.getElementById('shareUrl').textContent;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    showMessage('URL copied to clipboard!', 'success');
+                }).catch(() => {
+                    fallbackCopyUrl(shareUrl);
+                });
+            } else {
+                fallbackCopyUrl(shareUrl);
+            }
+        }
+
+        function fallbackCopyUrl(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showMessage('URL copied to clipboard!', 'success');
+            } catch (err) {
+                showMessage('Failed to copy URL', 'error');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function (registration) {
+                        console.log('ServiceWorker registration successful');
+                    }, function (err) {
+                        console.log('ServiceWorker registration failed:', err);
+                    });
+            });
+        }
+
+        // Handle feedback form submission
+        async function submitFeedback(event) {
+            // Prevent form from submitting normally
+            event.preventDefault();
+
+            // Get form data
+            const formData = {
+                timestamp: new Date().toISOString(),
+                location: currentPosition ? {
+                    latitude: currentPosition.lat,
+                    longitude: currentPosition.lng
+                } : null,
+                sessionId: sessionId,
+                feedback: {
+                    impressions: document.getElementById('impressions').value,
+                    liked_most: document.getElementById('liked_most').value,
+                    liked_least: document.getElementById('liked_least').value,
+                    price_thoughts: document.getElementById('price_thoughts').value,
+                    potential_buyers: document.getElementById('potential_buyers').value
+                },
+                contact: {
+                    name: document.getElementById('visitor_name').value || null,
+                    email: document.getElementById('visitor_email').value || null,
+                    phone: document.getElementById('visitor_phone').value || null
+                }
+            };
+
+            try {
+                // Show loading state
+                const submitBtn = event.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Submitting...';
+                submitBtn.disabled = true;
+
+                // Submit to your backend
+                const response = await fetch(CONFIG.FEEDBACK_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    // Success - clear form and show message
+                    document.getElementById('feedbackForm').reset();
+                    showNotification('Thank you for your feedback!', 'success');
+
+                    // Log to console for testing
+                    console.log('Feedback submitted successfully:', formData);
+                } else {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+
+                // Restore button
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+
+            } catch (error) {
+                console.error('Error submitting feedback:', error);
+                showNotification('Failed to submit feedback. Please try again.', 'error');
+
+                // Restore button
+                const submitBtn = event.target.querySelector('button[type="submit"]');
+                submitBtn.textContent = 'Submit Feedback';
+                submitBtn.disabled = false;
+
+                // For testing - log the data even if submission fails
+                console.log('Feedback data (not submitted):', formData);
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#48bb78' : type === 'error' ? '#f56565' : '#4299e1'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-weight: 500;
+                max-width: 300px;
+                transition: opacity 0.3s ease;
+            `;
+
+            document.body.appendChild(notification);
+
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>

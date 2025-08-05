@@ -1,0 +1,71 @@
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.location-info {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: #333;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    margin: 8px;
+}
+
+.map-container {
+    height: 400px;
+    width: 100%;
+    margin: 8px;
+}
+
+.map {
+    height: 100%;
+    width: 100%;
+    border-radius: 8px;
+}
+
+.geofence-controls {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    justify-content: center;
+}
+
+.activity-log {
+    padding: 16px;
+    background: white;
+    margin: 8px;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+
+    h2 {
+        margin-top: 0;
+        font-size: 1.1rem;
+        color: #333;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        padding: 4px 0;
+        font-size: 0.9rem;
+        color: #666;
+        border-bottom: 1px solid #eee;
+    }
+}
+
+.geofence-alert {
+    color: red;
+    font-weight: bold;
+    margin-top: 20px;
+}

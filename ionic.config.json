@@ -1,0 +1,25 @@
+{
+  "name": "ionic-geofence-app",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular",
+  "proxies": [
+    {
+      "path": "/api",
+      "proxyUrl": "http://localhost:3000/api"
+    }
+  ],
+  "geofence": {
+    "enabled": true,
+    "geofences": [
+      {
+        "id": "home",
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "radius": 100,
+        "transitionType": 3
+      }
+    ]
+  }
+}

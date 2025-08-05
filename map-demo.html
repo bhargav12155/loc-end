@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ionic Geofence App - Interactive Map</title>
+
+    <!-- Ionic CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0f0f0;
+        }
+
+        .header {
+            background: #3880ff;
+            color: white;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .location-info {
+            background: white;
+            margin: 8px;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .map-container {
+            height: 400px;
+            margin: 8px;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+            justify-content: center;
+        }
+
+        .btn {
+            background: #3880ff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: #3171e0;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-danger {
+            background: #eb445a;
+        }
+
+        .btn-danger:hover {
+            background: #cf3c4f;
+        }
+
+        .activity-log {
+            background: white;
+            margin: 8px;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .activity-log h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .activity-log ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .activity-log li {
+            padding: 4px 0;
+            font-size: 0.9rem;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        Geofence Tracker - Interactive Map
+    </div>
+
+    <div class="location-info">
+        <h3>Your Location</h3>
+        <p id="location-text">Click "Get My Location" to start...</p>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="getCurrentLocation()">Get My Location</button>
+        <button class="btn" id="set-geofence-btn" onclick="setGeofenceAtCurrentLocation()" disabled>Set Geofence
+            Here</button>
+        <button class="btn btn-danger" onclick="clearGeofence()">Clear Geofence</button>
+    </div>
+
+    <div class="activity-log">
+        <h3>Activity Log</h3>
+        <ul id="activity-list">
+            <li>Welcome! Click "Get My Location" to start tracking.</li>
+        </ul>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Ionic JS -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+
+    <script>
+        let map;
+        let userMarker;
+        let geofenceCircle;
+        let userLocation = null;
+        let geofenceLocation = null;
+        const geofenceRadius = 100; // meters
+
+        // Initialize map
+        function initMap() {
+            // Default center (San Francisco)
+            const defaultLat = 37.7749;
+            const defaultLng = -122.4194;
+
+            map = L.map('map').setView([defaultLat, defaultLng], 13);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            logActivity('Map initialized');
+        }
+
+        // Get user's current location
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                logActivity('Requesting location permission...');
+                navigator.geolocation.getCurrentPosition(
+                    showPosition,
+                    showError,
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+                );
+            } else {
+                logActivity('Geolocation is not supported by this browser');
+            }
+        }
+
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+
+            userLocation = { lat, lng };
+
+            // Update location display
+            document.getElementById('location-text').innerHTML =
+                `Latitude: ${lat.toFixed(6)}<br>Longitude: ${lng.toFixed(6)}<br>Accuracy: ±${Math.round(accuracy)}m`;
+
+            // Center map on user location
+            map.setView([lat, lng], 15);
+
+            // Remove existing user marker
+            if (userMarker) {
+                map.removeLayer(userMarker);
+            }
+
+            // Add user location marker
+            userMarker = L.marker([lat, lng])
+                .addTo(map)
+                .bindPopup('Your Current Location')
+                .openPopup();
+
+            // Enable geofence button
+            document.getElementById('set-geofence-btn').disabled = false;
+
+            logActivity(`Location acquired: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+        }
+
+        function showError(error) {
+            let message = '';
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    message = 'Location access denied by user';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = 'Location information unavailable';
+                    break;
+                case error.TIMEOUT:
+                    message = 'Location request timeout';
+                    break;
+                default:
+                    message = 'Unknown location error';
+                    break;
+            }
+
+            document.getElementById('location-text').innerHTML = message;
+            logActivity(`Error: ${message}`);
+        }
+
+        // Set geofence at current location
+        function setGeofenceAtCurrentLocation() {
+            if (!userLocation) {
+                logActivity('Please get your location first');
+                return;
+            }
+
+            geofenceLocation = { ...userLocation };
+
+            // Remove existing geofence circle
+            if (geofenceCircle) {
+                map.removeLayer(geofenceCircle);
+            }
+
+            // Add geofence circle
+            geofenceCircle = L.circle([geofenceLocation.lat, geofenceLocation.lng], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.3,
+                radius: geofenceRadius
+            }).addTo(map);
+
+            // Add popup to geofence
+            geofenceCircle.bindPopup(`Geofence (${geofenceRadius}m radius)`);
+
+            logActivity(`Geofence set with ${geofenceRadius}m radius`);
+        }
+
+        // Clear geofence
+        function clearGeofence() {
+            if (geofenceCircle) {
+                map.removeLayer(geofenceCircle);
+                geofenceCircle = null;
+                geofenceLocation = null;
+                logActivity('Geofence cleared');
+            } else {
+                logActivity('No geofence to clear');
+            }
+        }
+
+        // Log activity
+        function logActivity(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const activityList = document.getElementById('activity-list');
+            const newActivity = document.createElement('li');
+            newActivity.textContent = `[${timestamp}] ${message}`;
+            activityList.insertBefore(newActivity, activityList.firstChild);
+
+            // Keep only last 10 activities
+            while (activityList.children.length > 10) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            initMap();
+
+            // Start location tracking automatically (optional)
+            // getCurrentLocation();
+        });
+
+        // Optional: Watch position for continuous tracking
+        function startLocationTracking() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    function (position) {
+                        showPosition(position);
+                        checkGeofence(position.coords.latitude, position.coords.longitude);
+                    },
+                    showError,
+                    { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+                );
+                logActivity('Started continuous location tracking');
+            }
+        }
+
+        // Check if user is in geofence
+        function checkGeofence(lat, lng) {
+            if (!geofenceLocation) return;
+
+            const distance = calculateDistance(lat, lng, geofenceLocation.lat, geofenceLocation.lng);
+
+            if (distance <= geofenceRadius) {
+                logActivity(`Inside geofence (${Math.round(distance)}m from center)`);
+            } else {
+                logActivity(`Outside geofence (${Math.round(distance)}m from center)`);
+            }
+        }
+
+        // Calculate distance between two points in meters
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371e3; // Earth's radius in meters
+            const φ1 = lat1 * Math.PI / 180;
+            const φ2 = lat2 * Math.PI / 180;
+            const Δφ = (lat2 - lat1) * Math.PI / 180;
+            const Δλ = (lng2 - lng1) * Math.PI / 180;
+
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c;
+        }
+    </script>
+</body>
+
+</html>

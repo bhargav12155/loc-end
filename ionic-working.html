@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ionic Geofence App - Working Version</title>
+
+    <!-- Ionic CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", sans-serif;
+        }
+
+        ion-header {
+            --background: #3880ff;
+        }
+
+        ion-title {
+            --color: white;
+            font-weight: bold;
+        }
+
+        ion-content {
+            --background: #f5f5f5;
+        }
+
+        .location-info {
+            background: white;
+            margin: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .location-info h2 {
+            margin-top: 0;
+            color: #1a1a1a;
+            font-size: 1.2rem;
+        }
+
+        .location-info p {
+            margin: 8px 0;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .map-container {
+            margin: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+
+        .geofence-controls {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #3880ff;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            background: #3171e0;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #d4d4d4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: #eb445a;
+        }
+
+        .btn-danger:hover {
+            background: #cf3c4f;
+        }
+
+        .activity-log {
+            background: white;
+            margin: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .activity-log h2 {
+            margin-top: 0;
+            color: #1a1a1a;
+            font-size: 1.2rem;
+        }
+
+        .activity-log ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .activity-log li {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            color: #555;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .activity-log li:last-child {
+            border-bottom: none;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 8px;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+
+<body>
+    <ion-app>
+        <ion-header>
+            <ion-toolbar>
+                <ion-title>Geofence Tracker</ion-title>
+            </ion-toolbar>
+        </ion-header>
+
+        <ion-content>
+            <div class="location-info">
+                <h2>📍 Your Location</h2>
+                <p id="location-text">Click "Get My Location" to start tracking...</p>
+            </div>
+
+            <!-- Interactive Map Container -->
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+
+            <div class="geofence-controls">
+                <button class="btn" onclick="getCurrentLocation()" id="location-btn">
+                    📍 Get My Location
+                </button>
+                <button class="btn" onclick="setGeofenceAtCurrentLocation()" id="geofence-btn" disabled>
+                    🎯 Set Geofence Here
+                </button>
+                <button class="btn btn-danger" onclick="clearGeofence()">
+                    🗑️ Clear Geofence
+                </button>
+            </div>
+
+            <div class="activity-log">
+                <h2>📋 Activity Log</h2>
+                <ul id="activity-list">
+                    <li><span class="status status-info">INFO</span>App initialized. Ready to track location.</li>
+                </ul>
+            </div>
+        </ion-content>
+    </ion-app>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Ionic JS -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+
+    <script>
+        let map;
+        let userMarker;
+        let geofenceCircle;
+        let userLocation = null;
+        let watchId = null;
+        const geofenceRadius = 100; // meters
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeMap();
+        });
+
+        function initializeMap() {
+            // Default center (San Francisco)
+            const defaultLat = 37.7749;
+            const defaultLng = -122.4194;
+
+            map = L.map('map').setView([defaultLat, defaultLng], 13);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            logActivity('Map initialized and ready', 'info');
+        }
+
+        function getCurrentLocation() {
+            if (!navigator.geolocation) {
+                logActivity('Geolocation not supported by this browser', 'error');
+                return;
+            }
+
+            // Update button text
+            document.getElementById('location-btn').innerHTML = '⏳ Getting Location...';
+            document.getElementById('location-btn').disabled = true;
+
+            logActivity('Requesting location permission...', 'info');
+
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    showPosition(position);
+                    // Start watching position for continuous updates
+                    startWatchingPosition();
+                },
+                showError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
+                }
+            );
+        }
+
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+
+            userLocation = { lat, lng };
+
+            // Update location display
+            document.getElementById('location-text').innerHTML =
+                `<strong>Latitude:</strong> ${lat.toFixed(6)}<br>
+                 <strong>Longitude:</strong> ${lng.toFixed(6)}<br>
+                 <strong>Accuracy:</strong> ±${Math.round(accuracy)} meters`;
+
+            // Center map on user location with higher zoom
+            map.setView([lat, lng], 16);
+
+            // Remove existing user marker
+            if (userMarker) {
+                map.removeLayer(userMarker);
+            }
+
+            // Add user location marker with custom icon
+            userMarker = L.marker([lat, lng])
+                .addTo(map)
+                .bindPopup(`
+                    <div style="text-align: center;">
+                        <strong>📍 You are here!</strong><br>
+                        <small>Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</small><br>
+                        <small>Accuracy: ±${Math.round(accuracy)}m</small>
+                    </div>
+                `)
+                .openPopup();
+
+            // Reset and enable buttons
+            document.getElementById('location-btn').innerHTML = '✅ Location Found';
+            document.getElementById('location-btn').disabled = false;
+            document.getElementById('geofence-btn').disabled = false;
+
+            logActivity(`Location acquired: ${lat.toFixed(4)}, ${lng.toFixed(4)} (±${Math.round(accuracy)}m)`, 'success');
+
+            // Check if user is in existing geofence
+            if (geofenceCircle) {
+                checkGeofence(lat, lng);
+            }
+        }
+
+        function startWatchingPosition() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+            }
+
+            watchId = navigator.geolocation.watchPosition(
+                function (position) {
+                    // Update position silently without popup
+                    updateUserPosition(position);
+                },
+                function (error) {
+                    console.log('Watch position error:', error);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 30000
+                }
+            );
+
+            logActivity('Started continuous location tracking', 'info');
+        }
+
+        function updateUserPosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            userLocation = { lat, lng };
+
+            if (userMarker) {
+                userMarker.setLatLng([lat, lng]);
+            }
+
+            // Check geofence if exists
+            if (geofenceCircle) {
+                checkGeofence(lat, lng);
+            }
+        }
+
+        function showError(error) {
+            let message = '';
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    message = 'Location access denied. Please enable location permissions.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = 'Location information unavailable. Please try again.';
+                    break;
+                case error.TIMEOUT:
+                    message = 'Location request timeout. Please try again.';
+                    break;
+                default:
+                    message = 'Unknown location error occurred.';
+                    break;
+            }
+
+            document.getElementById('location-text').innerHTML = `❌ ${message}`;
+            document.getElementById('location-btn').innerHTML = '📍 Get My Location';
+            document.getElementById('location-btn').disabled = false;
+
+            logActivity(message, 'error');
+        }
+
+        function setGeofenceAtCurrentLocation() {
+            if (!userLocation) {
+                logActivity('Please get your location first', 'error');
+                return;
+            }
+
+            // Remove existing geofence
+            if (geofenceCircle) {
+                map.removeLayer(geofenceCircle);
+            }
+
+            // Add geofence circle
+            geofenceCircle = L.circle([userLocation.lat, userLocation.lng], {
+                color: '#e74c3c',
+                fillColor: '#e74c3c',
+                fillOpacity: 0.2,
+                radius: geofenceRadius,
+                weight: 3
+            }).addTo(map);
+
+            geofenceCircle.bindPopup(`
+                <div style="text-align: center;">
+                    <strong>🎯 Geofence Area</strong><br>
+                    <small>Radius: ${geofenceRadius} meters</small><br>
+                    <small>Center: ${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}</small>
+                </div>
+            `);
+
+            logActivity(`Geofence created at current location (${geofenceRadius}m radius)`, 'success');
+
+            // Immediately check if user is in geofence
+            checkGeofence(userLocation.lat, userLocation.lng);
+        }
+
+        function clearGeofence() {
+            if (geofenceCircle) {
+                map.removeLayer(geofenceCircle);
+                geofenceCircle = null;
+                logActivity('Geofence removed', 'info');
+            } else {
+                logActivity('No geofence to remove', 'info');
+            }
+        }
+
+        function checkGeofence(lat, lng) {
+            if (!geofenceCircle || !userLocation) return;
+
+            const center = geofenceCircle.getLatLng();
+            const distance = calculateDistance(lat, lng, center.lat, center.lng);
+
+            if (distance <= geofenceRadius) {
+                logActivity(`Inside geofence (${Math.round(distance)}m from center)`, 'success');
+            } else {
+                logActivity(`Outside geofence (${Math.round(distance)}m from center)`, 'info');
+            }
+        }
+
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371e3; // Earth's radius in meters
+            const φ1 = lat1 * Math.PI / 180;
+            const φ2 = lat2 * Math.PI / 180;
+            const Δφ = (lat2 - lat1) * Math.PI / 180;
+            const Δλ = (lng2 - lng1) * Math.PI / 180;
+
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c;
+        }
+
+        function logActivity(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const activityList = document.getElementById('activity-list');
+            const newActivity = document.createElement('li');
+
+            let statusClass = 'status-info';
+            let statusText = 'INFO';
+
+            switch (type) {
+                case 'success':
+                    statusClass = 'status-success';
+                    statusText = 'SUCCESS';
+                    break;
+                case 'error':
+                    statusClass = 'status-error';
+                    statusText = 'ERROR';
+                    break;
+            }
+
+            newActivity.innerHTML = `
+                <span class="status ${statusClass}">${statusText}</span>
+                [${timestamp}] ${message}
+            `;
+
+            activityList.insertBefore(newActivity, activityList.firstChild);
+
+            // Keep only last 8 activities
+            while (activityList.children.length > 8) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+
+# Main application files
+Allow: /index.html
+Allow: /geofence-tracker.html
+Allow: /privacy.html
+Allow: /manifest.json
+
+# Static assets
+Allow: /sw.js
+Allow: /404.html
+
+# Disallow sensitive or internal files
+Disallow: /api-example.md
+Disallow: /*.log
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /.git/
+Disallow: /package*.json
+Disallow: /tsconfig*.json
+Disallow: /angular.json
+Disallow: /ionic.config.json
+
+# Sitemap location (create this if you have multiple pages)
+# Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl delay (optional - be respectful to search engines)
+Crawl-delay: 1

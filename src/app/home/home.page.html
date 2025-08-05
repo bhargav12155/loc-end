@@ -1,0 +1,41 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Geofence Tracker</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div class="location-info">
+        <h2>Your Location</h2>
+        <p *ngIf="userLocation">
+            Latitude: {{ userLocation.latitude }}<br>
+            Longitude: {{ userLocation.longitude }}
+        </p>
+        <p *ngIf="!userLocation">Fetching location...</p>
+    </div>
+
+    <!-- Interactive Map Container -->
+    <div class="map-container">
+        <div id="map" class="map"></div>
+    </div>
+
+    <div class="geofence-controls">
+        <ion-button (click)="getCurrentLocationImmediately()" color="primary">
+            📍 Get My Location
+        </ion-button>
+        <ion-button (click)="setGeofenceAtCurrentLocation()" [disabled]="!userLocation">
+            Set Geofence Here
+        </ion-button>
+        <ion-button (click)="clearGeofence()" color="danger">
+            Clear Geofence
+        </ion-button>
+    </div>
+
+    <div class="activity-log">
+        <h2>Activity Log</h2>
+        <ul *ngIf="activityLog.length > 0">
+            <li *ngFor="let activity of activityLog">{{ activity }}</li>
+        </ul>
+        <p *ngIf="activityLog.length === 0">No activity logged yet.</p>
+    </div>
+</ion-content>

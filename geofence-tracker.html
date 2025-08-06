@@ -872,7 +872,7 @@
         // Automatically switch API endpoints based on environment
         // Use local backend if running from file:// or localhost
         const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const API_BASE = isLocal ? 'http://localhost:3000' : 'https://property-feedback.onrender.com';
+        const API_BASE = isLocal ? 'http://localhost:3000' : 'https://loc-end.onrender.com';
         const CONFIG = {
             API_ENDPOINT: API_BASE + '/api',
             GEOFENCE_ENDPOINT: API_BASE + '/api/geofence-alert',

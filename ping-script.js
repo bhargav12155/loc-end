@@ -1,8 +1,8 @@
 // ping-script.js
-// Keeps your Render app awake by pinging it every 14 minutes
+// Keeps your Render app awake by pinging it every 5 minutes
 const https = require("https");
 
-const RENDER_URL = "https://property-feedback.onrender.com"; // <-- Replace with your actual Render URL
+const RENDER_URL = "https://loc-end.onrender.com"; // <-- Replace with your actual Render URL
 
 function pingService() {
   console.log("Pinging service at: " + new Date().toISOString());
@@ -15,6 +15,6 @@ function pingService() {
     });
 }
 
-// Ping every 14 minutes (840000 ms)
-setInterval(pingService, 840000);
+// Ping every 5 minutes (300000 ms)
+setInterval(pingService, 300000);
 pingService(); // Initial ping

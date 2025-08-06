@@ -930,6 +930,8 @@
         let currentLocation = null;
         let watchId = null;
         let trackingActive = false;
+        let fetchedGeofences = [];
+        let geofenceStates = {}; // Track userInside state per geofence
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function () {
@@ -940,20 +942,24 @@
                 if (submitBtn) submitBtn.disabled = true;
             }
 
-            // Fetch geofences from backend on page load
-            fetchGeofences();
+            // Fetch geofences from backend on page load and store them
+            fetchGeofences().then(data => {
+                fetchedGeofences = Array.isArray(data) ? data : [];
+                // Initialize geofenceStates for each geofence
+                geofenceStates = {};
+                fetchedGeofences.forEach(g => {
+                    geofenceStates[g.id] = false; // Not inside at start
+                });
+            });
 
             // Request location permission only once per session
             if (!localStorage.getItem('location_permission_requested')) {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         function (position) {
-                            // Permission granted
                             localStorage.setItem('location_permission_requested', 'true');
-                            // Optionally store position for later use
                         },
                         function (error) {
-                            // Permission denied or error
                             localStorage.setItem('location_permission_requested', 'true');
                         },
                         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -1099,8 +1105,6 @@
 
             currentLocation = { lat, lng, accuracy, timestamp };
 
-            // ...existing code...
-
             // Update UI
             document.getElementById('currentLat').textContent = lat.toFixed(6);
             document.getElementById('currentLng').textContent = lng.toFixed(6);
@@ -1110,8 +1114,44 @@
             // Update map
             updateMapLocation(lat, lng, accuracy);
 
-            // Check all geofences
-            // checkAllGeofences(lat, lng, timestamp); // Geofence logic commented out
+            // Geofence entry/exit detection
+            if (fetchedGeofences.length > 0) {
+                fetchedGeofences.forEach(geofence => {
+                    const distance = calculateDistance(lat, lng, geofence.lat, geofence.lng);
+                    const isInside = distance <= geofence.radius;
+                    const wasInside = geofenceStates[geofence.id] || false;
+
+                    if (isInside && !wasInside) {
+                        // Entered geofence
+                        geofenceStates[geofence.id] = true;
+                        sendGeofenceAlert({
+                            userId: CONFIG.USER_ID,
+                            geofenceId: geofence.id,
+                            geofenceName: geofence.name,
+                            action: 'ENTER',
+                            lat: lat,
+                            lng: lng,
+                            distance: Math.round(distance),
+                            timestamp: timestamp,
+                            device: collectDeviceInfo()
+                        });
+                    } else if (!isInside && wasInside) {
+                        // Exited geofence
+                        geofenceStates[geofence.id] = false;
+                        sendGeofenceAlert({
+                            userId: CONFIG.USER_ID,
+                            geofenceId: geofence.id,
+                            geofenceName: geofence.name,
+                            action: 'EXIT',
+                            lat: lat,
+                            lng: lng,
+                            distance: Math.round(distance),
+                            timestamp: timestamp,
+                            device: collectDeviceInfo()
+                        });
+                    }
+                });
+            }
 
             // Send location data to backend
             sendLocationToBackend({

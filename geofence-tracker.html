@@ -1145,58 +1145,6 @@
             }
         }
 
-        function checkAllGeofences(lat, lng, timestamp) {
-            // CONFIG.GEOFENCES.forEach(geofence => {
-            //     const distance = calculateDistance(lat, lng, geofence.lat, geofence.lng);
-            //     const isInside = distance <= geofence.radius;
-            //     const wasInside = geofence.userInside || false;
-            //
-            //     if (isInside && !wasInside) {
-            //         // User entered geofence
-            //         geofence.userInside = true;
-            //         handleGeofenceEntry(geofence, { lat, lng, distance, timestamp });
-            //     } else if (!isInside && wasInside) {
-            //         // User exited geofence
-            //         geofence.userInside = false;
-            //         handleGeofenceExit(geofence, { lat, lng, distance, timestamp });
-            //     }
-            // });
-        }
-
-        function handleGeofenceEntry(geofence, locationData) {
-            // Console log geofence entry
-            // console.log('🎯 GEOFENCE ENTERED:', geofence.name, locationData);
-
-            // Send geofence entry alert to backend
-            // sendGeofenceAlert({
-            //     userId: CONFIG.USER_ID,
-            //     geofenceId: geofence.id,
-            //     geofenceName: geofence.name,
-            //     action: 'ENTER',
-            //     lat: locationData.lat,
-            //     lng: locationData.lng,
-            //     distance: Math.round(locationData.distance),
-            //     timestamp: locationData.timestamp
-            // });
-        }
-
-        function handleGeofenceExit(geofence, locationData) {
-            // Console log geofence exit
-            // console.log('↩️ GEOFENCE EXITED:', geofence.name, locationData);
-
-            // Send geofence exit alert to backend
-            // sendGeofenceAlert({
-            //     userId: CONFIG.USER_ID,
-            //     geofenceId: geofence.id,
-            //     geofenceName: geofence.name,
-            //     action: 'EXIT',
-            //     lat: locationData.lat,
-            //     lng: locationData.lng,
-            //     distance: Math.round(locationData.distance),
-            //     timestamp: locationData.timestamp
-            // });
-        }
-
         async function sendLocationToBackend(locationData) {
             // Add device info to locationData
             locationData.device = collectDeviceInfo();
@@ -1256,30 +1204,12 @@
             // 2. SMS API  
             // 3. Webhook service
             // 4. Local storage for retry later
-
-            // Silent fallback processing (commented out)
         }
 
         function setupSharingUrl() {
             const currentUrl = window.location.href;
             const shareUrlElement = document.getElementById('shareUrl');
             shareUrlElement.textContent = currentUrl;
-
-            // Generate QR code
-            // QRCode.toCanvas(document.createElement('canvas'), currentUrl, {
-            //     width: 200,
-            //     margin: 2,
-            //     color: {
-            //         dark: '#000000',
-            //         light: '#FFFFFF'
-            //     }
-            // }, function (error, canvas) {
-            //     if (!error) {
-            //         const qrContainer = document.getElementById('qrcode');
-            //         qrContainer.innerHTML = '';
-            //         qrContainer.appendChild(canvas);
-            //     }
-            // });
         }
 
         function getCurrentLocation() {
@@ -1375,9 +1305,6 @@
                 startLocationTracking();
             }
         }
-
-        // Remove the old geofence functions and replace with these
-        // (These are kept for any legacy references but are no longer used)
 
         function calculateDistance(lat1, lng1, lat2, lng2) {
             const R = 6371000; // Earth's radius in meters
@@ -1621,7 +1548,10 @@
                 // Submit to backend (no custom headers)
                 const response = await fetch(CONFIG.FEEDBACK_ENDPOINT, {
                     method: 'POST',
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                 });
 
                 if (response.ok) {
@@ -1766,7 +1696,10 @@
                     try {
                         const response = await fetch(CONFIG.FEEDBACK_ENDPOINT, {
                             method: 'POST',
-                            body: JSON.stringify(offlineQueue[i])
+                            body: JSON.stringify(offlineQueue[i]),
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
                         });
                         if (response.ok) {
                             // Remove from queue

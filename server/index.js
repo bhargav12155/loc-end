@@ -1,17 +1,12 @@
 import express from "express";
 import cors from "cors";
-import {
-  connectDB,
-  Feedback,
-  Location,
-  GeofenceAlert,
-  Geofence,
-} from "./db.js";
+import { getNetworkInfo } from "./networkUtils.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
+app.options("*", cors()); // include before other routes
 app.use(express.json());
 
 // Connect to MongoDB
@@ -25,8 +20,6 @@ connectDB()
 // Feedback endpoint
 app.post("/api/feedback", async (req, res) => {
   try {
-    // Import network info utility
-    const { getNetworkInfo } = await import("./networkUtils.js");
     const networkInfo = getNetworkInfo(req);
     const feedback = new Feedback({
       ...req.body,
@@ -45,8 +38,6 @@ app.post("/api/feedback", async (req, res) => {
 // Location endpoint
 app.post("/api/location", async (req, res) => {
   try {
-    // Import network info utility
-    const { getNetworkInfo } = await import("./networkUtils.js");
     const networkInfo = getNetworkInfo(req);
     // Log IP and network info for debugging
     console.log("[LOCATION] IP:", networkInfo.ip);
@@ -68,8 +59,6 @@ app.post("/api/location", async (req, res) => {
 // Geofence alert endpoint
 app.post("/api/geofence-alert", async (req, res) => {
   try {
-    // Import network info utility
-    const { getNetworkInfo } = await import("./networkUtils.js");
     const networkInfo = getNetworkInfo(req);
     // Log IP and network info for debugging
     console.log("[GEOFENCE ALERT] IP:", networkInfo.ip);

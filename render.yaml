@@ -1,0 +1,18 @@
+services:
+  # A web service for our backend
+  - type: web
+    name: loc-end # Match your service name on Render
+    env: node
+    region: oregon # Or your preferred region
+    plan: free
+    rootDir: ./server
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /api/health # Optional but recommended
+    envVars:
+      - key: NODE_VERSION
+        value: "20.11.1"
+      - key: MONGO_URI
+        fromDatabase:
+          name: loc-end-db # Make sure this matches your database name on Render
+          property: connectionString

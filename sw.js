@@ -15,15 +15,15 @@ const urlsToCache = [
 self.addEventListener("install", function (event) {
   console.log("Service Worker installing...");
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then(function (cache) {
-        console.log("Opened cache");
-        return cache.addAll(urlsToCache);
-      })
-      .then(function () {
-        return self.skipWaiting();
-      })
+    caches.open(CACHE_NAME).then(function (cache) {
+      console.log("Opened cache");
+      const promises = urlsToCache.map(function (url) {
+        return cache.add(url).catch(function (error) {
+          console.error(`Failed to cache ${url}:`, error);
+        });
+      });
+      return Promise.all(promises);
+    })
   );
 });
 

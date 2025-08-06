@@ -12,11 +12,16 @@ import {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Allow all origins
+// Allow all origins for maximum compatibility
 app.use(cors());
 app.options("*", cors()); // Enable pre-flight for all routes
 
 app.use(express.json());
+
+// Health check endpoint for Render
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Server is running" });
+});
 
 // Connect to MongoDB
 connectDB()

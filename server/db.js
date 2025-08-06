@@ -5,34 +5,59 @@ const MONGO_URI =
   "mongodb+srv://bhargav12155:Mydatabase%4001@cluster0.ehhoqo6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 export function connectDB() {
-  return mongoose.connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  return mongoose.connect(MONGO_URI);
 }
 
 // Feedback Schema
 const FeedbackSchema = new mongoose.Schema({
   timestamp: String,
-  location: {
-    latitude: Number,
-    longitude: Number,
-  },
   sessionId: String,
-  feedback: {
-    impressions: String,
-    liked_most: String,
-    liked_least: String,
-    price_thoughts: String,
-    potential_buyers: String,
+
+  // Primary feedback content (matches frontend propertyFeedback structure)
+  propertyFeedback: {
+    overall: String,
+    positives: String,
+    negatives: String,
+    priceOpinion: String,
+    referralPotential: String,
   },
+
+  // Lead information
   contact: {
     name: String,
     email: String,
     phone: String,
   },
-  device: mongoose.Schema.Types.Mixed,
-  network: mongoose.Schema.Types.Mixed, // <-- Add network info field
+
+  // Location data
+  location: {
+    coordinates: {
+      latitude: Number,
+      longitude: Number,
+    },
+    country: String,
+    timezone: String,
+    area: String,
+  },
+
+  // Device information
+  device: {
+    deviceType: String, // Renamed from 'type' to avoid MongoDB conflicts
+    os: String,
+    browser: String,
+    screen: {
+      width: Number,
+      height: Number,
+      colorDepth: Number,
+    },
+    capabilities: mongoose.Schema.Types.Mixed,
+  },
+
+  // Network details
+  network: mongoose.Schema.Types.Mixed,
+
+  // System metadata
+  system: mongoose.Schema.Types.Mixed,
   receivedAt: String,
 });
 

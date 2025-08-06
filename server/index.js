@@ -34,15 +34,38 @@ connectDB()
 // Feedback endpoint
 app.post("/api/feedback", async (req, res) => {
   try {
+    console.log("🔵 [FEEDBACK] === INCOMING REQUEST ===");
+    console.log("🔵 [FEEDBACK] Headers:", JSON.stringify(req.headers, null, 2));
+    console.log(
+      "🔵 [FEEDBACK] Body received from UI:",
+      JSON.stringify(req.body, null, 2)
+    );
+
     const networkInfo = getNetworkInfo(req);
-    const feedback = new Feedback({
+    console.log(
+      "🔵 [FEEDBACK] Network info:",
+      JSON.stringify(networkInfo, null, 2)
+    );
+
+    const feedbackData = {
       ...req.body,
       network: networkInfo,
       receivedAt: networkInfo.serverReceivedAt,
-    });
+    };
+
+    console.log(
+      "🔵 [FEEDBACK] Final data being saved to DB:",
+      JSON.stringify(feedbackData, null, 2)
+    );
+
+    const feedback = new Feedback(feedbackData);
     await feedback.save();
+
+    console.log("✅ [FEEDBACK] Successfully saved to database");
     res.status(201).json({ message: "Feedback received", success: true });
   } catch (err) {
+    console.error("❌ [FEEDBACK] Error:", err.message);
+    console.error("❌ [FEEDBACK] Full error:", err);
     res
       .status(500)
       .json({ message: "Error saving feedback", error: err.message });
@@ -52,18 +75,38 @@ app.post("/api/feedback", async (req, res) => {
 // Location endpoint
 app.post("/api/location", async (req, res) => {
   try {
+    console.log("🟡 [LOCATION] === INCOMING REQUEST ===");
+    console.log("🟡 [LOCATION] Headers:", JSON.stringify(req.headers, null, 2));
+    console.log(
+      "🟡 [LOCATION] Body received from UI:",
+      JSON.stringify(req.body, null, 2)
+    );
+
     const networkInfo = getNetworkInfo(req);
-    // Log IP and network info for debugging
-    console.log("[LOCATION] IP:", networkInfo.ip);
-    console.log("[LOCATION] Network Info:", networkInfo);
-    const location = new Location({
+    console.log(
+      "🟡 [LOCATION] Network info:",
+      JSON.stringify(networkInfo, null, 2)
+    );
+
+    const locationData = {
       ...req.body,
       network: networkInfo,
       receivedAt: networkInfo.serverReceivedAt,
-    });
+    };
+
+    console.log(
+      "🟡 [LOCATION] Final data being saved to DB:",
+      JSON.stringify(locationData, null, 2)
+    );
+
+    const location = new Location(locationData);
     await location.save();
+
+    console.log("✅ [LOCATION] Successfully saved to database");
     res.status(201).json({ message: "Location received", success: true });
   } catch (err) {
+    console.error("❌ [LOCATION] Error:", err.message);
+    console.error("❌ [LOCATION] Full error:", err);
     res
       .status(500)
       .json({ message: "Error saving location", error: err.message });
@@ -73,18 +116,41 @@ app.post("/api/location", async (req, res) => {
 // Geofence alert endpoint
 app.post("/api/geofence-alert", async (req, res) => {
   try {
+    console.log("🔴 [GEOFENCE ALERT] === INCOMING REQUEST ===");
+    console.log(
+      "🔴 [GEOFENCE ALERT] Headers:",
+      JSON.stringify(req.headers, null, 2)
+    );
+    console.log(
+      "🔴 [GEOFENCE ALERT] Body received from UI:",
+      JSON.stringify(req.body, null, 2)
+    );
+
     const networkInfo = getNetworkInfo(req);
-    // Log IP and network info for debugging
-    console.log("[GEOFENCE ALERT] IP:", networkInfo.ip);
-    console.log("[GEOFENCE ALERT] Network Info:", networkInfo);
-    const alert = new GeofenceAlert({
+    console.log(
+      "🔴 [GEOFENCE ALERT] Network info:",
+      JSON.stringify(networkInfo, null, 2)
+    );
+
+    const alertData = {
       ...req.body,
       network: networkInfo,
       receivedAt: networkInfo.serverReceivedAt,
-    });
+    };
+
+    console.log(
+      "🔴 [GEOFENCE ALERT] Final data being saved to DB:",
+      JSON.stringify(alertData, null, 2)
+    );
+
+    const alert = new GeofenceAlert(alertData);
     await alert.save();
+
+    console.log("✅ [GEOFENCE ALERT] Successfully saved to database");
     res.status(201).json({ message: "Geofence alert received", success: true });
   } catch (err) {
+    console.error("❌ [GEOFENCE ALERT] Error:", err.message);
+    console.error("❌ [GEOFENCE ALERT] Full error:", err);
     res
       .status(500)
       .json({ message: "Error saving geofence alert", error: err.message });

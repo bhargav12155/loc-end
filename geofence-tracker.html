@@ -1153,7 +1153,10 @@
         async function sendLocationToBackend(locationData) {
             // Add device info to locationData
             locationData.device = collectDeviceInfo();
-            // ...existing code...
+
+            console.log('📍 [LOCATION] === SENDING TO BACKEND ===');
+            console.log('📍 [LOCATION] Endpoint:', CONFIG.API_ENDPOINT + '/location');
+            console.log('📍 [LOCATION] Data being sent:', JSON.stringify(locationData, null, 2));
 
             try {
                 const response = await fetch(CONFIG.API_ENDPOINT + '/location', {
@@ -1166,21 +1169,25 @@
                     body: JSON.stringify(locationData)
                 });
 
+                console.log('📍 [LOCATION] Response Status:', response.status);
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // ...existing code...
+                const responseData = await response.json();
+                console.log('✅ [LOCATION] Success response:', JSON.stringify(responseData, null, 2));
 
             } catch (error) {
-                console.log('❌ Failed to send location:', error.message);
-                // ...existing code...
+                console.log('❌ [LOCATION] Failed to send location:', error.message);
+                console.log('❌ [LOCATION] Full error:', error);
             }
         }
 
         async function sendGeofenceAlert(alertData) {
-            // Only send geofence alert to backend; IP is handled server-side
-            console.log('🚨 Sending Geofence Alert:', alertData);
+            console.log('🚨 [GEOFENCE] === SENDING TO BACKEND ===');
+            console.log('🚨 [GEOFENCE] Endpoint:', CONFIG.GEOFENCE_ENDPOINT);
+            console.log('🚨 [GEOFENCE] Alert data being sent:', JSON.stringify(alertData, null, 2));
 
             try {
                 const response = await fetch(CONFIG.GEOFENCE_ENDPOINT, {
@@ -1193,16 +1200,18 @@
                     body: JSON.stringify(alertData)
                 });
 
+                console.log('🚨 [GEOFENCE] Response Status:', response.status);
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // Console log successful alert send
-                console.log('✅ Geofence alert sent successfully');
+                const responseData = await response.json();
+                console.log('✅ [GEOFENCE] Success response:', JSON.stringify(responseData, null, 2));
 
             } catch (error) {
-                // Console log alert send error
-                console.log('❌ Failed to send geofence alert:', error.message);
+                console.log('❌ [GEOFENCE] Failed to send geofence alert:', error.message);
+                console.log('❌ [GEOFENCE] Full error:', error);
                 // Silent error handling - try fallback
                 tryFallbackAlert(alertData);
             }
@@ -1484,7 +1493,7 @@
 
                 // Device information
                 device: {
-                    type: getDeviceType(),
+                    deviceType: getDeviceType(),
                     os: getOSVersion(),
                     browser: getBrowserVersion(),
                     screen: {
@@ -1555,6 +1564,14 @@
             let submissionSuccess = false;
             let feedbackCollected = false;
             try {
+                console.log('📤 [FRONTEND] === SENDING TO BACKEND ===');
+                console.log('📤 [FRONTEND] Endpoint:', CONFIG.FEEDBACK_ENDPOINT);
+                console.log('📤 [FRONTEND] Headers:', {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                });
+                console.log('📤 [FRONTEND] Payload being sent:', JSON.stringify(payload, null, 2));
+
                 // Submit to backend (no custom headers)
                 const response = await fetch(CONFIG.FEEDBACK_ENDPOINT, {
                     method: 'POST',
@@ -1566,12 +1583,29 @@
                     },
                 });
 
+                console.log('📥 [FRONTEND] === RESPONSE RECEIVED ===');
+                console.log('📥 [FRONTEND] Status:', response.status);
+                console.log('📥 [FRONTEND] Status Text:', response.statusText);
+                console.log('📥 [FRONTEND] Headers:', Object.fromEntries(response.headers.entries()));
+
+                let responseData;
+                try {
+                    responseData = await response.json();
+                    console.log('📥 [FRONTEND] Response Body:', JSON.stringify(responseData, null, 2));
+                } catch (e) {
+                    console.log('📥 [FRONTEND] Response Body: (not JSON)', await response.text());
+                }
+
                 if (response.ok) {
+                    console.log('✅ [FRONTEND] Request successful!');
                     submissionSuccess = true;
                 } else {
+                    console.log('❌ [FRONTEND] Request failed with status:', response.status);
                     throw new Error(`Server responded with status: ${response.status}`);
                 }
             } catch (error) {
+                console.log('❌ [FRONTEND] Network/Fetch Error:', error.message);
+                console.log('❌ [FRONTEND] Full error:', error);
                 // Offline handling: store feedback in localStorage for later retry
                 let offlineQueue = [];
                 try {

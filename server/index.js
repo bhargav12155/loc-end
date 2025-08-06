@@ -1,12 +1,21 @@
 import express from "express";
 import cors from "cors";
 import { getNetworkInfo } from "./networkUtils.js";
+import {
+  connectDB,
+  Feedback,
+  Location,
+  GeofenceAlert,
+  Geofence,
+} from "./db.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Allow all origins
 app.use(cors());
-app.options("*", cors()); // include before other routes
+app.options("*", cors()); // Enable pre-flight for all routes
+
 app.use(express.json());
 
 // Connect to MongoDB

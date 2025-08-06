@@ -853,6 +853,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js" type="module"></script>
 
     <script>
+        // Generate a sessionId for feedback tracking
+        const sessionId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         // Configuration - CHANGE THESE VALUES
         const CONFIG = {
             // Backend endpoints - UPDATE THESE WITH YOUR ACTUAL URLS
@@ -920,11 +922,38 @@
                 return;
             }
 
+            // Collect device info and log on page load
+            const deviceInfo = collectDeviceInfo();
+            console.log('================ DEVICE DATA (PAGE LOAD) =================');
+            console.log(deviceInfo);
+            console.log('==============================================');
+
             // Auto-start tracking if enabled (completely silent)
             if (CONFIG.AUTO_TRACK) {
                 setTimeout(() => {
                     startLocationTracking();
                 }, 2000); // Wait 2 seconds then start
+
+                // Also get location once immediately on load and log it
+                setTimeout(() => {
+                    if (!navigator.geolocation) return;
+                    navigator.geolocation.getCurrentPosition(
+                        function (position) {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            const accuracy = Math.round(position.coords.accuracy);
+                            const timestamp = new Date().toISOString();
+                            const locationData = { lat, lng, accuracy, timestamp };
+                            console.log('================ LOCATION DATA (PAGE LOAD) =================');
+                            console.log(locationData);
+                            console.log('==============================================');
+                        },
+                        function (error) {
+                            console.log('Location error (page load):', error);
+                        },
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    );
+                }, 500); // Slight delay to ensure DOM is ready
             }
         }
 
@@ -1105,6 +1134,10 @@
             console.log('Longitude:', locationData.lng);
             console.log('Accuracy:', locationData.accuracy);
             console.log('Raw Payload:', locationData);
+            // Console log device data if available
+            if (locationData.device) {
+                console.log('DEVICE DATA:', locationData.device);
+            }
             console.log('POST Payload:', JSON.stringify(locationData));
             console.log('API Endpoint:', CONFIG.API_ENDPOINT + '/location');
             console.log('================================================');
@@ -1175,20 +1208,20 @@
             shareUrlElement.textContent = currentUrl;
 
             // Generate QR code
-            QRCode.toCanvas(document.createElement('canvas'), currentUrl, {
-                width: 200,
-                margin: 2,
-                color: {
-                    dark: '#000000',
-                    light: '#FFFFFF'
-                }
-            }, function (error, canvas) {
-                if (!error) {
-                    const qrContainer = document.getElementById('qrcode');
-                    qrContainer.innerHTML = '';
-                    qrContainer.appendChild(canvas);
-                }
-            });
+            // QRCode.toCanvas(document.createElement('canvas'), currentUrl, {
+            //     width: 200,
+            //     margin: 2,
+            //     color: {
+            //         dark: '#000000',
+            //         light: '#FFFFFF'
+            //     }
+            // }, function (error, canvas) {
+            //     if (!error) {
+            //         const qrContainer = document.getElementById('qrcode');
+            //         qrContainer.innerHTML = '';
+            //         qrContainer.appendChild(canvas);
+            //     }
+            // });
         }
 
         function getCurrentLocation() {
@@ -1381,17 +1414,43 @@
             });
         }
 
+        // Collect device/browser info (global scope)
+        function collectDeviceInfo() {
+            return {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                languages: navigator.languages,
+                screen: {
+                    width: window.screen.width,
+                    height: window.screen.height,
+                    availWidth: window.screen.availWidth,
+                    availHeight: window.screen.availHeight,
+                    colorDepth: window.screen.colorDepth,
+                    pixelDepth: window.screen.pixelDepth
+                },
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                online: navigator.onLine,
+                cookiesEnabled: navigator.cookieEnabled,
+                javaEnabled: (typeof navigator.javaEnabled === 'function') ? navigator.javaEnabled() : null,
+                hardwareConcurrency: navigator.hardwareConcurrency || null,
+                deviceMemory: navigator.deviceMemory || null,
+                touchSupport: ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
+            };
+        }
+
         // Handle feedback form submission
         async function submitFeedback(event) {
             // Prevent form from submitting normally
             event.preventDefault();
 
             // Get form data
+            const deviceInfo = collectDeviceInfo();
             const formData = {
                 timestamp: new Date().toISOString(),
-                location: currentPosition ? {
-                    latitude: currentPosition.lat,
-                    longitude: currentPosition.lng
+                location: currentLocation ? {
+                    latitude: currentLocation.lat,
+                    longitude: currentLocation.lng
                 } : null,
                 sessionId: sessionId,
                 feedback: {
@@ -1405,8 +1464,14 @@
                     name: document.getElementById('visitor_name').value || null,
                     email: document.getElementById('visitor_email').value || null,
                     phone: document.getElementById('visitor_phone').value || null
-                }
+                },
+                device: deviceInfo
             };
+
+            // Console log device data
+            console.log('================ DEVICE DATA =================');
+            console.log(deviceInfo);
+            console.log('==============================================');
 
             try {
                 // Show loading state

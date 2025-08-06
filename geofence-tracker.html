@@ -741,6 +741,15 @@
 </head>
 
 <body>
+    <!-- Loading Overlay for Render Cold Start -->
+    <div id="loading-overlay"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.95);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div class="spinner"
+            style="width:40px;height:40px;border:4px solid #e2e8f0;border-top:4px solid #3880ff;border-radius:50%;animation:spin 1s linear infinite;">
+        </div>
+        <p style="margin-top:20px;font-size:1.1rem;color:#2d3748;">Just a moment while we wake up the server...</p>
+        <small style="color:#64748b;">First load may take up to 60 seconds on our free tier</small>
+    </div>
     <div class="header">
         <h1>🏡 Property Feedback</h1>
         <p>We value your opinion! Please share your thoughts about the property you visited today.</p>
@@ -853,6 +862,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js" type="module"></script>
 
     <script>
+        // Hide loading overlay after timeout or successful load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const overlay = document.getElementById('loading-overlay');
+                if (overlay) overlay.style.display = 'none';
+            }, 1000);
+        });
         // Generate a sessionId for feedback tracking
         const sessionId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         // Configuration - CHANGE THESE VALUES

@@ -71,3 +71,15 @@ export const GeofenceAlert = mongoose.model(
   "GeofenceAlert",
   GeofenceAlertSchema
 );
+
+// Geofence Schema
+const GeofenceSchema = new mongoose.Schema({
+  name: String,
+  lat: Number,
+  lng: Number,
+  radius: Number,
+  activeFrom: Date,
+  activeTo: Date,
+});
+
+export const Geofence = mongoose.model("Geofence", GeofenceSchema);

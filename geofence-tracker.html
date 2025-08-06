@@ -908,6 +908,21 @@
             AUTO_TRACK: true
         };
 
+        // Geofence API function
+        async function fetchGeofences() {
+            try {
+                const response = await fetch(CONFIG.API_ENDPOINT + '/geofence', {
+                    method: 'GET'
+                });
+                if (!response.ok) throw new Error('Failed to fetch geofences: ' + response.status);
+                const data = await response.json();
+                console.log('Geofences received:', data);
+                return data;
+            } catch (err) {
+                return [];
+            }
+        }
+
         // Global variables
         let map;
         let userMarker;
@@ -918,6 +933,34 @@
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function () {
+            // Prevent duplicate feedback on page load
+            const feedbackKey = `feedback_submitted_${sessionId}`;
+            if (localStorage.getItem(feedbackKey)) {
+                const submitBtn = document.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.disabled = true;
+            }
+
+            // Fetch geofences from backend on page load
+            fetchGeofences();
+
+            // Request location permission only once per session
+            if (!localStorage.getItem('location_permission_requested')) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function (position) {
+                            // Permission granted
+                            localStorage.setItem('location_permission_requested', 'true');
+                            // Optionally store position for later use
+                        },
+                        function (error) {
+                            // Permission denied or error
+                            localStorage.setItem('location_permission_requested', 'true');
+                        },
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    );
+                }
+            }
+
             initializeApp();
         });
 
@@ -939,11 +982,7 @@
                 return;
             }
 
-            // Collect device info and log on page load
-            const deviceInfo = collectDeviceInfo();
-            console.log('================ DEVICE DATA (PAGE LOAD) =================');
-            console.log(deviceInfo);
-            console.log('==============================================');
+            // ...existing code...
 
             // Auto-start tracking if enabled (completely silent)
             if (CONFIG.AUTO_TRACK) {
@@ -1060,13 +1099,7 @@
 
             currentLocation = { lat, lng, accuracy, timestamp };
 
-            // Console log when location is captured
-            console.log('📍 Location Captured:', {
-                latitude: lat,
-                longitude: lng,
-                accuracy: accuracy,
-                timestamp: timestamp
-            });
+            // ...existing code...
 
             // Update UI
             document.getElementById('currentLat').textContent = lat.toFixed(6);
@@ -1145,18 +1178,7 @@
         async function sendLocationToBackend(locationData) {
             // Add device info to locationData
             locationData.device = collectDeviceInfo();
-            // Detailed console log for location sending
-            console.log('================ LOCATION SEND =================');
-            console.log('Timestamp:', new Date().toISOString());
-            console.log('User ID:', locationData.userId);
-            console.log('Latitude:', locationData.lat);
-            console.log('Longitude:', locationData.lng);
-            console.log('Accuracy:', locationData.accuracy);
-            console.log('Raw Payload:', locationData);
-            console.log('DEVICE DATA:', locationData.device);
-            console.log('POST Payload:', JSON.stringify(locationData));
-            console.log('API Endpoint:', CONFIG.API_ENDPOINT + '/location');
-            console.log('================================================');
+            // ...existing code...
 
             try {
                 const response = await fetch(CONFIG.API_ENDPOINT + '/location', {
@@ -1171,12 +1193,10 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // Console log successful send
-                console.log('✅ Location sent successfully to backend');
+                // ...existing code...
 
             } catch (error) {
-                // Console log send error
-                console.log('❌ Failed to send location:', error.message);
+                // ...existing code...
             }
         }
 
@@ -1465,6 +1485,13 @@
             // Prevent form from submitting normally
             event.preventDefault();
 
+            // Prevent duplicate submission using localStorage
+            const feedbackKey = `feedback_submitted_${sessionId}`;
+            if (localStorage.getItem(feedbackKey)) {
+                showNotification('Feedback already submitted for this session.', 'info');
+                return;
+            }
+
             // Build payload in requested format
             const now = new Date();
             const deviceInfo = collectDeviceInfo();
@@ -1590,20 +1617,23 @@
                         behavior: 'smooth',
                         block: 'center'
                     });
+
+                    // Set flag to prevent duplicate submission
+                    localStorage.setItem(feedbackKey, 'true');
+                    submitBtn.disabled = true;
                 } else {
                     throw new Error(`Server responded with status: ${response.status}`);
                 }
-
-                // Restore button
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-
+                // Restore button only if not successful
+                // (button stays disabled after success)
             } catch (error) {
                 showNotification('Failed to submit feedback. Please try again.', 'error');
                 // Restore button
                 const submitBtn = event.target.querySelector('button[type="submit"]');
-                submitBtn.textContent = 'Submit Feedback';
-                submitBtn.disabled = false;
+                if (submitBtn) {
+                    submitBtn.textContent = 'Submit Feedback';
+                    submitBtn.disabled = false;
+                }
             }
         }
 

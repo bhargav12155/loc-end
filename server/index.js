@@ -1,6 +1,12 @@
 import express from "express";
 import cors from "cors";
-import { connectDB, Feedback, Location, GeofenceAlert } from "./db.js";
+import {
+  connectDB,
+  Feedback,
+  Location,
+  GeofenceAlert,
+  Geofence,
+} from "./db.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -81,6 +87,40 @@ app.post("/api/geofence-alert", async (req, res) => {
       .json({ message: "Error saving geofence alert", error: err.message });
   }
 });
+
+// Create a new geofence
+app.post("/api/geofence", async (req, res) => {
+  try {
+    const { name, lat, lng, radius, activeFrom, activeTo } = req.body;
+    const geofence = new Geofence({
+      name,
+      lat,
+      lng,
+      radius,
+      activeFrom: new Date(activeFrom),
+      activeTo: new Date(activeTo),
+    });
+    await geofence.save();
+    res.status(201).json({ message: "Geofence created", geofence });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error creating geofence", error: err.message });
+  }
+});
+
+// Get all geofences
+app.get("/api/geofence", async (req, res) => {
+  try {
+    const geofences = await Geofence.find();
+    res.json(geofences);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching geofences", error: err.message });
+  }
+});
+
 app.get("/api/feedback", async (req, res) => {
   try {
     const feedbacks = await Feedback.find().sort({ receivedAt: -1 });

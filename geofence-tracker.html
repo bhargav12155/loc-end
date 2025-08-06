@@ -912,13 +912,18 @@
         async function fetchGeofences() {
             try {
                 const response = await fetch(CONFIG.API_ENDPOINT + '/geofence', {
-                    method: 'GET'
+                    method: 'GET',
+                    mode: 'cors', // Explicitly enable CORS
+                    headers: {
+                        'Accept': 'application/json',
+                    }
                 });
                 if (!response.ok) throw new Error('Failed to fetch geofences: ' + response.status);
                 const data = await response.json();
                 console.log('Geofences received:', data);
                 return data;
             } catch (err) {
+                console.log('❌ Failed to fetch geofences:', err.message);
                 return [];
             }
         }
@@ -1153,8 +1158,10 @@
             try {
                 const response = await fetch(CONFIG.API_ENDPOINT + '/location', {
                     method: 'POST',
+                    mode: 'cors', // Explicitly enable CORS
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                     },
                     body: JSON.stringify(locationData)
                 });
@@ -1166,6 +1173,7 @@
                 // ...existing code...
 
             } catch (error) {
+                console.log('❌ Failed to send location:', error.message);
                 // ...existing code...
             }
         }
@@ -1177,8 +1185,10 @@
             try {
                 const response = await fetch(CONFIG.GEOFENCE_ENDPOINT, {
                     method: 'POST',
+                    mode: 'cors', // Explicitly enable CORS
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                     },
                     body: JSON.stringify(alertData)
                 });
@@ -1548,9 +1558,11 @@
                 // Submit to backend (no custom headers)
                 const response = await fetch(CONFIG.FEEDBACK_ENDPOINT, {
                     method: 'POST',
+                    mode: 'cors', // Explicitly enable CORS
                     body: JSON.stringify(payload),
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                     },
                 });
 
@@ -1696,9 +1708,11 @@
                     try {
                         const response = await fetch(CONFIG.FEEDBACK_ENDPOINT, {
                             method: 'POST',
+                            mode: 'cors', // Explicitly enable CORS
                             body: JSON.stringify(offlineQueue[i]),
                             headers: {
                                 'Content-Type': 'application/json',
+                                'Accept': 'application/json',
                             },
                         });
                         if (response.ok) {

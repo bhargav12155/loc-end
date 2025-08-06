@@ -748,10 +748,6 @@
         <p style="margin-top:20px;font-size:1.1rem;color:#2d3748;">Just a moment while we wake up the server...</p>
         <small style="color:#64748b;">First load may take up to 60 seconds on our free tier</small>
     </div>
-    <!-- Visible Version Info -->
-    <footer style="width:100%;text-align:center;padding:16px 0;color:#64748b;font-size:0.95rem;opacity:0.85;">
-        Version: 0
-    </footer>
     <div class="header">
         <h1>🏡 Property Feedback</h1>
         <p>We value your opinion! Please share your thoughts about the property you visited today.</p>
@@ -1469,34 +1465,106 @@
             // Prevent form from submitting normally
             event.preventDefault();
 
-            // Get form data
+            // Build payload in requested format
+            const now = new Date();
             const deviceInfo = collectDeviceInfo();
-            const formData = {
-                timestamp: new Date().toISOString(),
-                location: currentLocation ? {
-                    latitude: currentLocation.lat,
-                    longitude: currentLocation.lng
-                } : null,
+            const payload = {
+                // Core metadata
+                id: undefined, // Backend will assign
+                timestamp: now.toISOString(),
                 sessionId: sessionId,
-                feedback: {
-                    impressions: document.getElementById('impressions').value,
-                    liked_most: document.getElementById('liked_most').value,
-                    liked_least: document.getElementById('liked_least').value,
-                    price_thoughts: document.getElementById('price_thoughts').value,
-                    potential_buyers: document.getElementById('potential_buyers').value
+
+                // Primary feedback content
+                propertyFeedback: {
+                    overall: document.getElementById('impressions').value,
+                    positives: document.getElementById('liked_most').value,
+                    negatives: document.getElementById('liked_least').value,
+                    priceOpinion: document.getElementById('price_thoughts').value,
+                    referralPotential: document.getElementById('potential_buyers').value
                 },
+
+                // Lead information
                 contact: {
                     name: document.getElementById('visitor_name').value || null,
                     email: document.getElementById('visitor_email').value || null,
                     phone: document.getElementById('visitor_phone').value || null
                 },
-                device: deviceInfo
+
+                // Location data
+                location: {
+                    coordinates: currentLocation ? {
+                        latitude: currentLocation.lat,
+                        longitude: currentLocation.lng
+                    } : null,
+                    country: undefined, // Backend can enrich
+                    timezone: deviceInfo.timezone || undefined,
+                    area: undefined // Optional, not collected from form
+                },
+
+                // Device information
+                device: {
+                    type: getDeviceType(),
+                    os: getOSVersion(),
+                    browser: getBrowserVersion(),
+                    screen: {
+                        width: deviceInfo.screen.width,
+                        height: deviceInfo.screen.height,
+                        colorDepth: deviceInfo.screen.colorDepth
+                    },
+                    capabilities: {
+                        touchEnabled: deviceInfo.touchSupport,
+                        cpuCores: deviceInfo.hardwareConcurrency,
+                        cookiesEnabled: deviceInfo.cookiesEnabled
+                    }
+                },
+
+                // Network details (for analytics)
+                network: {
+                    ip: undefined, // Backend will assign
+                    userAgent: deviceInfo.userAgent,
+                    language: deviceInfo.language,
+                    referrer: document.referrer || window.location.origin
+                },
+
+                // System metadata
+                system: {
+                    receivedAt: undefined, // Backend will assign
+                    processedBy: undefined // Backend will assign
+                }
             };
 
-            // Console log device data
-            console.log('================ DEVICE DATA =================');
-            console.log(deviceInfo);
-            console.log('==============================================');
+            // Helper functions for device info
+            function getDeviceType() {
+                const ua = deviceInfo.userAgent;
+                if (/iPhone|iPad|iPod/.test(ua)) return 'iPhone';
+                if (/Android/.test(ua)) return 'Android';
+                if (/Windows/.test(ua)) return 'Windows';
+                if (/Macintosh|Mac OS X/.test(ua)) return 'Mac';
+                return 'Unknown';
+            }
+            function getOSVersion() {
+                const ua = deviceInfo.userAgent;
+                const matchIOS = ua.match(/OS ([\d_]+)/);
+                if (matchIOS) return 'iOS ' + matchIOS[1].replace(/_/g, '.');
+                const matchAndroid = ua.match(/Android ([\d.]+)/);
+                if (matchAndroid) return 'Android ' + matchAndroid[1];
+                return 'Unknown';
+            }
+            function getBrowserVersion() {
+                const ua = deviceInfo.userAgent;
+                const matchSafari = ua.match(/Version\/([\d.]+) Safari/);
+                if (matchSafari) return 'Safari ' + matchSafari[1];
+                const matchChrome = ua.match(/Chrome\/([\d.]+)/);
+                if (matchChrome) return 'Chrome ' + matchChrome[1];
+                const matchFirefox = ua.match(/Firefox\/([\d.]+)/);
+                if (matchFirefox) return 'Firefox ' + matchFirefox[1];
+                return 'Unknown';
+            }
+
+            // Console log payload
+            console.log('================ FEEDBACK PAYLOAD =================');
+            console.log(payload);
+            console.log('===================================================');
 
             try {
                 // Show loading state
@@ -1505,14 +1573,10 @@
                 submitBtn.textContent = 'Submitting...';
                 submitBtn.disabled = true;
 
-                // Submit to your backend
+                // Submit to backend (no custom headers)
                 const response = await fetch(CONFIG.FEEDBACK_ENDPOINT, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(payload)
                 });
 
                 if (response.ok) {
@@ -1526,8 +1590,6 @@
                         behavior: 'smooth',
                         block: 'center'
                     });
-
-                    // Data submitted successfully (silent logging)
                 } else {
                     throw new Error(`Server responded with status: ${response.status}`);
                 }
@@ -1538,13 +1600,10 @@
 
             } catch (error) {
                 showNotification('Failed to submit feedback. Please try again.', 'error');
-
                 // Restore button
                 const submitBtn = event.target.querySelector('button[type="submit"]');
                 submitBtn.textContent = 'Submit Feedback';
                 submitBtn.disabled = false;
-
-                // Silent error logging
             }
         }
 
@@ -1581,6 +1640,10 @@
             }, 5000);
         }
     </script>
+    <!-- Visible Version Info (footer at very bottom) -->
+    <footer style="width:100%;text-align:center;padding:16px 0;color:#64748b;font-size:0.95rem;opacity:0.85;">
+        Version: 1.0.0
+    </footer>
 </body>
 
 </html>

@@ -872,11 +872,14 @@
         // Generate a sessionId for feedback tracking
         const sessionId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         // Configuration - CHANGE THESE VALUES
+        // Automatically switch API endpoints based on environment
+        // Use local backend if running from file:// or localhost
+        const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = isLocal ? 'http://localhost:3000' : 'https://property-feedback.onrender.com';
         const CONFIG = {
-            // Backend endpoints - UPDATE THESE WITH YOUR ACTUAL URLS
-            API_ENDPOINT: 'http://localhost:3000/api',
-            GEOFENCE_ENDPOINT: 'http://localhost:3000/api/geofence-alert',
-            FEEDBACK_ENDPOINT: 'http://localhost:3000/api/feedback',
+            API_ENDPOINT: API_BASE + '/api',
+            GEOFENCE_ENDPOINT: API_BASE + '/api/geofence-alert',
+            FEEDBACK_ENDPOINT: API_BASE + '/api/feedback',
 
             // Geofence definitions - UPDATE WITH YOUR ACTUAL LOCATIONS
             GEOFENCES: [

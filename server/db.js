@@ -32,6 +32,7 @@ const FeedbackSchema = new mongoose.Schema({
     phone: String,
   },
   device: mongoose.Schema.Types.Mixed,
+  network: mongoose.Schema.Types.Mixed, // <-- Add network info field
   receivedAt: String,
 });
 
@@ -45,6 +46,7 @@ const LocationSchema = new mongoose.Schema({
   accuracy: Number,
   timestamp: String,
   device: mongoose.Schema.Types.Mixed,
+  network: mongoose.Schema.Types.Mixed, // <-- Add network info field
   receivedAt: String,
 });
 
@@ -61,6 +63,7 @@ const GeofenceAlertSchema = new mongoose.Schema({
   distance: Number,
   timestamp: String,
   device: mongoose.Schema.Types.Mixed,
+  network: mongoose.Schema.Types.Mixed, // <-- Add network info field
   receivedAt: String,
 });
 

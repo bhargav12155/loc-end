@@ -19,8 +19,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="GeoTracker">
 
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="./manifest.json">
+    <!-- PWA Manifest - Only load when served via HTTP/HTTPS -->
+    <script>
+        // Only add manifest link if not running from file:// protocol
+        if (window.location.protocol !== 'file:') {
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = './manifest.json';
+            document.head.appendChild(manifestLink);
+        }
+    </script>
 
     <!-- Favicon -->
 
@@ -735,6 +743,272 @@
         .hidden {
             display: none !important;
         }
+
+        /* Disclaimer Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 70vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(20px) scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 20px 24px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .modal-header h3 {
+            color: #2d3748;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal-body {
+            padding: 16px 24px;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .consent-section {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 16px 24px;
+            flex-shrink: 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        .consent-checkbox {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .disclaimer-content {
+            height: 70px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        .disclaimer-content h4 {
+            color: #2d3748;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 20px 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .disclaimer-content h4:first-child {
+            margin-top: 0;
+        }
+
+        .disclaimer-content ul {
+            margin: 8px 0 16px 16px;
+            padding: 0;
+        }
+
+        .disclaimer-content li {
+            margin-bottom: 6px;
+            color: #64748b;
+        }
+
+        .consent-checkbox {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .consent-checkbox label {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #2d3748;
+        }
+
+        .consent-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            accent-color: #667eea;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 12px 24px 16px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-shrink: 0;
+            background: white;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            min-width: 80px;
+        }
+
+        .modal-btn-cancel {
+            background: #f8fafc;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .modal-btn-confirm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-btn-confirm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Mobile responsiveness for modal */
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 95%;
+                max-height: 85vh;
+                border-radius: 12px;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
+            }
+        }
+
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            z-index: 9999;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+
+        .scroll-to-top:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 480px) {
+            .scroll-to-top {
+                bottom: 80px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 
@@ -854,6 +1128,62 @@
         </div>
     </div>
 
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top">
+        ↑
+    </button>
+
+    <!-- Privacy Disclaimer Modal -->
+    <div id="disclaimerModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <span>🔒</span>
+                    Privacy Notice
+                </h3>
+            </div>
+
+            <div class="modal-body">
+                <div class="disclaimer-content">
+                    <p style="font-size: 0.85rem; line-height: 1.5; color: #64748b; text-align: justify;">
+                        We may collect and process user-submitted content (including feedback and contact details),
+                        generalized location indicators, device and browser specifications, technical identifiers (such
+                        as IP address and fingerprint data), interaction timestamps, session metadata, navigation
+                        patterns, referral sources, screen dimensions, and behavioral signals. This information may be
+                        supplemented by inferred attributes, cross-device identifiers, and third-party analytics
+                        artifacts. Data may be stored securely, retained for up to seven years, transferred
+                        internationally, and processed using automated systems that include profiling and
+                        decision-making mechanisms. Information may be shared with trusted affiliates or processors
+                        under applicable compliance regimes. Users retain rights under relevant privacy laws to access,
+                        correct, delete, or object to the processing of their personal data, subject to legal
+                        limitations and procedural requirements.
+                    </p>
+                </div>
+            </div>
+
+            <div class="consent-section">
+                <div class="consent-checkbox">
+                    <label for="dataConsent">
+                        <input type="checkbox" id="dataConsent" />
+                        <span>
+                            I confirm
+                        </span>
+                    </label>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn modal-btn-cancel" onclick="closeDisclaimerModal()">
+                        Cancel
+                    </button>
+                    <button type="button" id="confirmSubmission" class="modal-btn modal-btn-confirm"
+                        onclick="confirmAndSubmit()" disabled>
+                        Continue & Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
@@ -865,8 +1195,24 @@
             setTimeout(() => {
                 const overlay = document.getElementById('loading-overlay');
                 if (overlay) overlay.style.display = 'none';
-            }, 1000);
+
+                // Ensure page starts at the top
+                window.scrollTo(0, 0);
+            }, 100); // Reduced timeout to scroll faster
         });
+
+        // Also ensure scroll to top immediately on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.scrollTo(0, 0);
+        });
+
+        // Scroll to top function for the floating button
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
         // Generate a sessionId for feedback tracking
         const sessionId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         // Configuration - CHANGE THESE VALUES
@@ -920,10 +1266,8 @@
                 });
                 if (!response.ok) throw new Error('Failed to fetch geofences: ' + response.status);
                 const data = await response.json();
-                console.log('Geofences received:', data);
                 return data;
             } catch (err) {
-                console.log('❌ Failed to fetch geofences:', err.message);
                 return [];
             }
         }
@@ -1050,9 +1394,6 @@
         function startLocationTracking() {
             if (trackingActive) return;
 
-            // Console log when tracking starts
-            console.log('🔄 Starting location tracking...');
-
             const options = {
                 enableHighAccuracy: true,
                 timeout: 15000,
@@ -1068,8 +1409,6 @@
 
             trackingActive = true;
             document.getElementById('statusIndicator').classList.add('active');
-
-            console.log('✅ Location tracking started successfully');
         }
 
         function stopLocationTracking() {
@@ -1154,10 +1493,6 @@
             // Add device info to locationData
             locationData.device = collectDeviceInfo();
 
-            console.log('📍 [LOCATION] === SENDING TO BACKEND ===');
-            console.log('📍 [LOCATION] Endpoint:', CONFIG.API_ENDPOINT + '/location');
-            console.log('📍 [LOCATION] Data being sent:', JSON.stringify(locationData, null, 2));
-
             try {
                 const response = await fetch(CONFIG.API_ENDPOINT + '/location', {
                     method: 'POST',
@@ -1169,26 +1504,16 @@
                     body: JSON.stringify(locationData)
                 });
 
-                console.log('📍 [LOCATION] Response Status:', response.status);
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const responseData = await response.json();
-                console.log('✅ [LOCATION] Success response:', JSON.stringify(responseData, null, 2));
-
             } catch (error) {
-                console.log('❌ [LOCATION] Failed to send location:', error.message);
-                console.log('❌ [LOCATION] Full error:', error);
+                // Silent error handling
             }
         }
 
         async function sendGeofenceAlert(alertData) {
-            console.log('🚨 [GEOFENCE] === SENDING TO BACKEND ===');
-            console.log('🚨 [GEOFENCE] Endpoint:', CONFIG.GEOFENCE_ENDPOINT);
-            console.log('🚨 [GEOFENCE] Alert data being sent:', JSON.stringify(alertData, null, 2));
-
             try {
                 const response = await fetch(CONFIG.GEOFENCE_ENDPOINT, {
                     method: 'POST',
@@ -1200,18 +1525,11 @@
                     body: JSON.stringify(alertData)
                 });
 
-                console.log('🚨 [GEOFENCE] Response Status:', response.status);
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const responseData = await response.json();
-                console.log('✅ [GEOFENCE] Success response:', JSON.stringify(responseData, null, 2));
-
             } catch (error) {
-                console.log('❌ [GEOFENCE] Failed to send geofence alert:', error.message);
-                console.log('❌ [GEOFENCE] Full error:', error);
                 // Silent error handling - try fallback
                 tryFallbackAlert(alertData);
             }
@@ -1455,6 +1773,84 @@
                 return;
             }
 
+            // Show disclaimer modal instead of immediately submitting
+            showDisclaimerModal();
+        }
+
+        // Modal control functions
+        function showDisclaimerModal() {
+            const modal = document.getElementById('disclaimerModal');
+            const consentCheckbox = document.getElementById('dataConsent');
+            const confirmBtn = document.getElementById('confirmSubmission');
+
+            // Reset modal state
+            consentCheckbox.checked = false;
+            confirmBtn.disabled = true;
+
+            // Show modal
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeDisclaimerModal() {
+            const modal = document.getElementById('disclaimerModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto'; // Ensure scrolling is restored
+
+            // Scroll back to top of the page
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Enable/disable confirm button based on consent checkbox
+        document.addEventListener('DOMContentLoaded', function () {
+            const consentCheckbox = document.getElementById('dataConsent');
+            const confirmBtn = document.getElementById('confirmSubmission');
+            const modal = document.getElementById('disclaimerModal');
+
+            if (consentCheckbox && confirmBtn) {
+                consentCheckbox.addEventListener('change', function () {
+                    confirmBtn.disabled = !this.checked;
+                });
+            }
+
+            // Close modal when clicking outside
+            if (modal) {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) {
+                        closeDisclaimerModal();
+                    }
+                });
+            }
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && modal.classList.contains('show')) {
+                    closeDisclaimerModal();
+                }
+            });
+        });
+
+        // Actually submit the feedback after consent
+        async function confirmAndSubmit() {
+            // Close modal
+            closeDisclaimerModal();
+
+            // Now proceed with the actual submission
+            await performFeedbackSubmission();
+        }
+
+        // Renamed original submission logic
+        async function performFeedbackSubmission() {
+            // Check again for duplicate submission (in case of multiple modal opens)
+            const feedbackKey = `feedback_submitted_${sessionId}`;
+            if (localStorage.getItem(feedbackKey)) {
+                showNotification('Feedback already submitted for this session.', 'info');
+                return;
+            }
+
             // Build payload in requested format
             const now = new Date();
             const deviceInfo = collectDeviceInfo();
@@ -1551,12 +1947,7 @@
                 return 'Unknown';
             }
 
-            // Console log payload
-            console.log('================ FEEDBACK PAYLOAD =================');
-            console.log(payload);
-            console.log('===================================================');
-
-            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const submitBtn = document.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
             submitBtn.textContent = 'Submitting...';
             submitBtn.disabled = true;
@@ -1564,14 +1955,6 @@
             let submissionSuccess = false;
             let feedbackCollected = false;
             try {
-                console.log('📤 [FRONTEND] === SENDING TO BACKEND ===');
-                console.log('📤 [FRONTEND] Endpoint:', CONFIG.FEEDBACK_ENDPOINT);
-                console.log('📤 [FRONTEND] Headers:', {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                });
-                console.log('📤 [FRONTEND] Payload being sent:', JSON.stringify(payload, null, 2));
-
                 // Submit to backend (no custom headers)
                 const response = await fetch(CONFIG.FEEDBACK_ENDPOINT, {
                     method: 'POST',
@@ -1583,29 +1966,12 @@
                     },
                 });
 
-                console.log('📥 [FRONTEND] === RESPONSE RECEIVED ===');
-                console.log('📥 [FRONTEND] Status:', response.status);
-                console.log('📥 [FRONTEND] Status Text:', response.statusText);
-                console.log('📥 [FRONTEND] Headers:', Object.fromEntries(response.headers.entries()));
-
-                let responseData;
-                try {
-                    responseData = await response.json();
-                    console.log('📥 [FRONTEND] Response Body:', JSON.stringify(responseData, null, 2));
-                } catch (e) {
-                    console.log('📥 [FRONTEND] Response Body: (not JSON)', await response.text());
-                }
-
                 if (response.ok) {
-                    console.log('✅ [FRONTEND] Request successful!');
                     submissionSuccess = true;
                 } else {
-                    console.log('❌ [FRONTEND] Request failed with status:', response.status);
                     throw new Error(`Server responded with status: ${response.status}`);
                 }
             } catch (error) {
-                console.log('❌ [FRONTEND] Network/Fetch Error:', error.message);
-                console.log('❌ [FRONTEND] Full error:', error);
                 // Offline handling: store feedback in localStorage for later retry
                 let offlineQueue = [];
                 try {

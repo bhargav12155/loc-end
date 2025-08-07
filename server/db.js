@@ -42,15 +42,40 @@ const FeedbackSchema = new mongoose.Schema({
 
   // Device information
   device: {
-    deviceType: String, // Renamed from 'type' to avoid MongoDB conflicts
-    os: String,
-    browser: String,
+    deviceId: String, // NEW: Unique device identifier
+    deviceFingerprint: String, // NEW: Device fingerprint hash
+    deviceType: String, // iPhone, Android, Windows, Mac, etc.
+    os: String, // Operating system version
+    browser: String, // Browser version
+    userAgent: String, // Full user agent string
+    platform: String, // Platform info
+    language: String, // Browser language
+    languages: [String], // All supported languages
     screen: {
       width: Number,
       height: Number,
+      availWidth: Number,
+      availHeight: Number,
       colorDepth: Number,
+      pixelDepth: Number,
     },
-    capabilities: mongoose.Schema.Types.Mixed,
+    viewport: {
+      width: Number,
+      height: Number,
+    },
+    timezone: String,
+    timezoneOffset: Number,
+    online: Boolean,
+    cookiesEnabled: Boolean,
+    touchSupport: Boolean,
+    maxTouchPoints: Number,
+    hardwareConcurrency: Number,
+    deviceMemory: Number,
+    connection: mongoose.Schema.Types.Mixed, // Network connection info
+    storage: mongoose.Schema.Types.Mixed, // Storage capabilities
+    plugins: [String], // Browser plugins
+    webgl: mongoose.Schema.Types.Mixed, // WebGL info
+    capabilities: mongoose.Schema.Types.Mixed, // Legacy field
   },
 
   // Network details
@@ -70,8 +95,19 @@ const LocationSchema = new mongoose.Schema({
   lng: Number,
   accuracy: Number,
   timestamp: String,
-  device: mongoose.Schema.Types.Mixed,
-  network: mongoose.Schema.Types.Mixed, // <-- Add network info field
+  device: {
+    deviceId: String, // NEW: Device identifier for location tracking
+    deviceFingerprint: String, // NEW: Device fingerprint
+    userAgent: String,
+    platform: String,
+    timezone: String,
+    hardwareConcurrency: Number,
+    deviceMemory: Number,
+    touchSupport: Boolean,
+    // Store full device info as mixed for flexibility
+    fullDeviceInfo: mongoose.Schema.Types.Mixed,
+  },
+  network: mongoose.Schema.Types.Mixed,
   receivedAt: String,
 });
 
@@ -82,13 +118,21 @@ const GeofenceAlertSchema = new mongoose.Schema({
   userId: String,
   geofenceId: String,
   geofenceName: String,
-  action: String,
+  action: String, // ENTER or EXIT
   lat: Number,
   lng: Number,
   distance: Number,
   timestamp: String,
-  device: mongoose.Schema.Types.Mixed,
-  network: mongoose.Schema.Types.Mixed, // <-- Add network info field
+  device: {
+    deviceId: String, // NEW: Device identifier for geofence tracking
+    deviceFingerprint: String, // NEW: Device fingerprint
+    userAgent: String,
+    platform: String,
+    timezone: String,
+    // Store full device info as mixed for flexibility
+    fullDeviceInfo: mongoose.Schema.Types.Mixed,
+  },
+  network: mongoose.Schema.Types.Mixed,
   receivedAt: String,
 });
 

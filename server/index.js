@@ -41,6 +41,23 @@ app.post("/api/feedback", async (req, res) => {
       JSON.stringify(req.body, null, 2)
     );
 
+    // Extract device info for logging
+    const deviceInfo = req.body.device || {};
+    console.log(
+      "📱 [DEVICE] Device ID:",
+      deviceInfo.deviceId || "❌ NOT PROVIDED"
+    );
+    console.log(
+      "📱 [DEVICE] Fingerprint:",
+      deviceInfo.deviceFingerprint || "❌ NOT PROVIDED"
+    );
+    console.log("📱 [DEVICE] Platform:", deviceInfo.platform || "Unknown");
+    console.log("📱 [DEVICE] User Agent:", deviceInfo.userAgent || "Unknown");
+    console.log(
+      "📱 [DEVICE] Full Device Object Keys:",
+      Object.keys(deviceInfo)
+    );
+
     const networkInfo = getNetworkInfo(req);
     console.log(
       "🔵 [FEEDBACK] Network info:",
@@ -80,6 +97,17 @@ app.post("/api/location", async (req, res) => {
     console.log(
       "🟡 [LOCATION] Body received from UI:",
       JSON.stringify(req.body, null, 2)
+    );
+
+    // Extract device info for logging
+    const deviceInfo = req.body.device || {};
+    console.log(
+      "📱 [DEVICE] Device ID:",
+      deviceInfo.deviceId || "Not provided"
+    );
+    console.log(
+      "📱 [DEVICE] Fingerprint:",
+      deviceInfo.deviceFingerprint || "Not provided"
     );
 
     const networkInfo = getNetworkInfo(req);
@@ -198,6 +226,43 @@ app.get("/api/feedback", async (req, res) => {
     res
       .status(500)
       .json({ message: "Error fetching feedbacks", error: err.message });
+  }
+});
+
+// NEW: Debug endpoint to show device data structure
+app.get("/api/debug/device-data", async (req, res) => {
+  try {
+    // Get latest feedback with device info
+    const latestFeedback = await Feedback.findOne().sort({ receivedAt: -1 });
+    const latestLocation = await Location.findOne().sort({ receivedAt: -1 });
+    const latestAlert = await GeofenceAlert.findOne().sort({ receivedAt: -1 });
+
+    res.json({
+      message: "Latest device data from all tables",
+      feedback: {
+        exists: !!latestFeedback,
+        device: latestFeedback?.device || "No device data",
+        network: latestFeedback?.network || "No network data",
+        timestamp: latestFeedback?.receivedAt || "No timestamp",
+      },
+      location: {
+        exists: !!latestLocation,
+        device: latestLocation?.device || "No device data",
+        network: latestLocation?.network || "No network data",
+        timestamp: latestLocation?.receivedAt || "No timestamp",
+      },
+      geofenceAlert: {
+        exists: !!latestAlert,
+        device: latestAlert?.device || "No device data",
+        network: latestAlert?.network || "No network data",
+        timestamp: latestAlert?.receivedAt || "No timestamp",
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error fetching device data",
+      error: err.message,
+    });
   }
 });
 

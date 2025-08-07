@@ -1146,18 +1146,17 @@
             <div class="modal-body">
                 <div class="disclaimer-content">
                     <p style="font-size: 0.85rem; line-height: 1.5; color: #64748b; text-align: justify;">
-                        We may collect and process user-submitted content (including feedback and contact details),
-                        generalized location indicators, device and browser specifications, technical identifiers (such
-                        as IP address and fingerprint data), interaction timestamps, session metadata, navigation
-                        patterns, referral sources, screen dimensions, and behavioral signals. This information may be
-                        supplemented by inferred attributes, cross-device identifiers, and third-party analytics
-                        artifacts. Data may be stored securely, retained for up to seven years, transferred
-                        internationally, and processed using automated systems that include profiling and
-                        decision-making mechanisms. Information may be shared with trusted affiliates or processors
-                        under applicable compliance regimes. Users retain rights under relevant privacy laws to access,
-                        correct, delete, or object to the processing of their personal data, subject to legal
-                        limitations and procedural requirements.
-                    </p>
+                        We may collect and store information based on how you interact with our website or services.
+                        This can include details you provide through forms or feedback, general location based on your
+                        access point, basic details about the device and software you use, the times you visit, and how
+                        you move through or use the site. We may also use systems that recognize patterns in how users
+                        behave or return to the site, and we may work with trusted services that help us understand this
+                        activity. Some of this information may be grouped together or analyzed to support how we operate
+                        and improve. All data is kept securely, may be transferred to other countries if needed, and is
+                        kept only as long as required by law or business needs. In some cases, we may share information
+                        with trusted partners who follow strict rules. You have the right to ask about the information
+                        we have about you, make changes, request removal, or limit how it’s used, depending on the rules
+                        that apply in your area.
                 </div>
             </div>
 
@@ -1739,6 +1738,8 @@
         // Collect device/browser info (global scope)
         function collectDeviceInfo() {
             return {
+                deviceId: getOrCreateDeviceId(),
+                deviceFingerprint: generateDeviceFingerprint(),
                 userAgent: navigator.userAgent,
                 platform: navigator.platform,
                 language: navigator.language,
@@ -1751,14 +1752,113 @@
                     colorDepth: window.screen.colorDepth,
                     pixelDepth: window.screen.pixelDepth
                 },
+                viewport: {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                },
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                timezoneOffset: new Date().getTimezoneOffset(),
                 online: navigator.onLine,
                 cookiesEnabled: navigator.cookieEnabled,
                 javaEnabled: (typeof navigator.javaEnabled === 'function') ? navigator.javaEnabled() : null,
                 hardwareConcurrency: navigator.hardwareConcurrency || null,
                 deviceMemory: navigator.deviceMemory || null,
-                touchSupport: ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
+                touchSupport: ('ontouchstart' in window) || (navigator.maxTouchPoints > 0),
+                maxTouchPoints: navigator.maxTouchPoints || 0,
+                connection: getConnectionInfo(),
+                storage: getStorageInfo(),
+                plugins: getPluginInfo(),
+                webgl: getWebGLInfo()
             };
+        }
+
+        // Generate or retrieve persistent device ID
+        function getOrCreateDeviceId() {
+            let deviceId = localStorage.getItem('device_id');
+            if (!deviceId) {
+                // Generate a new device ID
+                deviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('device_id', deviceId);
+            }
+            return deviceId;
+        }
+
+        // Generate device fingerprint for duplicate detection
+        function generateDeviceFingerprint() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillText('Device fingerprint', 2, 2);
+
+            const fingerprint = [
+                navigator.userAgent,
+                navigator.language,
+                window.screen.width + 'x' + window.screen.height,
+                window.screen.colorDepth,
+                new Date().getTimezoneOffset(),
+                navigator.platform,
+                navigator.cookieEnabled,
+                navigator.hardwareConcurrency || 'unknown',
+                canvas.toDataURL()
+            ].join('|');
+
+            return btoa(fingerprint).substr(0, 32);
+        }
+
+        // Get connection info
+        function getConnectionInfo() {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection) {
+                return {
+                    effectiveType: connection.effectiveType,
+                    downlink: connection.downlink,
+                    rtt: connection.rtt,
+                    saveData: connection.saveData
+                };
+            }
+            return null;
+        }
+
+        // Get storage capabilities
+        function getStorageInfo() {
+            try {
+                return {
+                    localStorage: !!window.localStorage,
+                    sessionStorage: !!window.sessionStorage,
+                    indexedDB: !!window.indexedDB,
+                    webSQL: !!window.openDatabase
+                };
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Get plugin info
+        function getPluginInfo() {
+            try {
+                return Array.from(navigator.plugins).map(plugin => plugin.name);
+            } catch (e) {
+                return [];
+            }
+        }
+
+        // Get WebGL info for device identification
+        function getWebGLInfo() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    return {
+                        vendor: gl.getParameter(gl.VENDOR),
+                        renderer: gl.getParameter(gl.RENDERER),
+                        version: gl.getParameter(gl.VERSION)
+                    };
+                }
+            } catch (e) {
+                // Ignore errors
+            }
+            return null;
         }
 
         // Handle feedback form submission
@@ -1887,22 +1987,8 @@
                     area: undefined // Optional, not collected from form
                 },
 
-                // Device information
-                device: {
-                    deviceType: getDeviceType(),
-                    os: getOSVersion(),
-                    browser: getBrowserVersion(),
-                    screen: {
-                        width: deviceInfo.screen.width,
-                        height: deviceInfo.screen.height,
-                        colorDepth: deviceInfo.screen.colorDepth
-                    },
-                    capabilities: {
-                        touchEnabled: deviceInfo.touchSupport,
-                        cpuCores: deviceInfo.hardwareConcurrency,
-                        cookiesEnabled: deviceInfo.cookiesEnabled
-                    }
-                },
+                // Device information - Use full device collection
+                device: collectDeviceInfo(),
 
                 // Network details (for analytics)
                 network: {

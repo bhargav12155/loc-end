@@ -84,6 +84,9 @@ const FeedbackSchema = new mongoose.Schema({
   // System metadata
   system: mongoose.Schema.Types.Mixed,
   receivedAt: String,
+
+  // Application metadata
+  appName: String,
 });
 
 export const Feedback = mongoose.model("Feedback", FeedbackSchema);
@@ -109,6 +112,9 @@ const LocationSchema = new mongoose.Schema({
   },
   network: mongoose.Schema.Types.Mixed,
   receivedAt: String,
+
+  // Application metadata
+  appName: String,
 });
 
 export const Location = mongoose.model("Location", LocationSchema);
@@ -134,6 +140,9 @@ const GeofenceAlertSchema = new mongoose.Schema({
   },
   network: mongoose.Schema.Types.Mixed,
   receivedAt: String,
+
+  // Application metadata
+  appName: String,
 });
 
 export const GeofenceAlert = mongoose.model(

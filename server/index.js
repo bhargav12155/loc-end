@@ -58,6 +58,9 @@ app.post("/api/feedback", async (req, res) => {
       Object.keys(deviceInfo)
     );
 
+    // Extract app name for logging
+    console.log("📱 [APP] App Name:", req.body.appName || "❌ NOT PROVIDED");
+
     const networkInfo = getNetworkInfo(req);
     console.log(
       "🔵 [FEEDBACK] Network info:",
@@ -109,6 +112,26 @@ app.post("/api/location", async (req, res) => {
       "📱 [DEVICE] Fingerprint:",
       deviceInfo.deviceFingerprint || "Not provided"
     );
+    console.log("📱 [DEVICE] User Agent:", deviceInfo.userAgent || "Unknown");
+    console.log("📱 [DEVICE] Platform:", deviceInfo.platform || "Unknown");
+    console.log("📱 [DEVICE] Language:", deviceInfo.language || "Unknown");
+    console.log(
+      "📱 [DEVICE] Hardware Concurrency:",
+      deviceInfo.hardwareConcurrency || "Unknown"
+    );
+
+    // Extract app name for logging
+    console.log("📱 [APP] App Name:", req.body.appName || "❌ NOT PROVIDED");
+
+    // Log location data
+    console.log("📍 [LOCATION] Lat:", req.body.lat || "Not provided");
+    console.log("📍 [LOCATION] Lng:", req.body.lng || "Not provided");
+    console.log("📍 [LOCATION] Accuracy:", req.body.accuracy || "Not provided");
+    console.log("📍 [LOCATION] User ID:", req.body.userId || "Not provided");
+    console.log(
+      "📍 [LOCATION] Timestamp:",
+      req.body.timestamp || "Not provided"
+    );
 
     const networkInfo = getNetworkInfo(req);
     console.log(
@@ -153,6 +176,9 @@ app.post("/api/geofence-alert", async (req, res) => {
       "🔴 [GEOFENCE ALERT] Body received from UI:",
       JSON.stringify(req.body, null, 2)
     );
+
+    // Extract app name for logging
+    console.log("📱 [APP] App Name:", req.body.appName || "❌ NOT PROVIDED");
 
     const networkInfo = getNetworkInfo(req);
     console.log(

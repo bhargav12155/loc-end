@@ -496,87 +496,85 @@
         }
 
         /* Mobile responsiveness - Super Mobile Friendly */
-
+        
         /* Small phones (up to 480px) - Most aggressive optimization */
         @media (max-width: 480px) {
-
             /* Header optimization for small screens */
             .header {
                 padding: 15px 12px;
             }
-
+            
             .header h1 {
                 font-size: 1.4rem;
                 margin-bottom: 6px;
                 line-height: 1.3;
             }
-
+            
             .header p {
                 font-size: 0.9rem;
                 line-height: 1.4;
             }
-
+            
             /* Container and form spacing */
             .container {
                 padding: 12px;
             }
-
+            
             .feedback-form {
                 padding: 16px;
                 margin-bottom: 20px;
             }
-
+            
             .feedback-form h2 {
                 font-size: 1.3rem;
                 margin-bottom: 6px;
             }
-
+            
             .feedback-form .subtitle {
                 font-size: 0.85rem;
                 margin-bottom: 20px;
             }
-
+            
             /* Form elements optimization */
             .form-group {
                 margin-bottom: 16px;
             }
-
+            
             .form-group label {
                 font-size: 0.85rem;
                 margin-bottom: 6px;
             }
-
+            
             .form-group input,
             .form-group textarea,
             .form-group select {
                 padding: 10px 12px;
                 font-size: 0.9rem;
-                min-height: 44px;
-                /* Touch-friendly minimum */
+                min-height: 44px; /* Touch-friendly minimum */
             }
-
+            
             .form-group textarea {
                 min-height: 80px;
             }
-
+            
             /* Contact section */
             .contact-section h3 {
                 font-size: 1.1rem;
                 margin-bottom: 12px;
             }
-
+            
             .contact-row {
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
-
+            
             /* Buttons */
             .form-actions {
                 flex-direction: column;
                 align-items: center;
                 gap: 10px;
             }
-
+            
             .btn-submit,
             .btn-reset {
                 width: 100%;
@@ -585,7 +583,7 @@
                 font-size: 0.95rem;
                 min-height: 44px;
             }
-
+            
             /* Modal optimization */
             .modal-content {
                 max-height: 90vh;
@@ -593,28 +591,28 @@
                 width: 95%;
                 max-width: none;
             }
-
+            
             .modal-header h3 {
                 font-size: 1.2rem;
             }
-
+            
             .modal-header,
             .modal-body,
             .modal-footer {
                 padding: 12px;
             }
-
+            
             .modal-footer {
                 flex-direction: column;
                 gap: 8px;
             }
-
+            
             .modal-btn {
                 width: 100%;
                 min-height: 44px;
                 font-size: 0.9rem;
             }
-
+            
             /* Utility elements */
             .scroll-to-top {
                 bottom: 12px;
@@ -623,98 +621,97 @@
                 height: 40px;
                 font-size: 16px;
             }
-
+            
             /* Success message */
             .success-message h3 {
                 font-size: 1.2rem;
             }
-
+            
             .success-message p {
                 font-size: 0.9rem;
             }
         }
-
+        
         /* Large phones and small tablets (481px to 768px) */
         @media (min-width: 481px) and (max-width: 768px) {
-
             /* Header optimization */
             .header {
                 padding: 20px 16px;
             }
-
+            
             .header h1 {
                 font-size: 1.8rem;
                 margin-bottom: 8px;
             }
-
+            
             .header p {
                 font-size: 1rem;
             }
-
+            
             /* Container and form */
             .container {
                 padding: 16px;
             }
-
+            
             .feedback-form {
                 padding: 24px;
             }
-
+            
             .feedback-form h2 {
                 font-size: 1.5rem;
             }
-
+            
             /* Form elements */
             .form-group {
                 margin-bottom: 20px;
             }
-
+            
             .form-group input,
             .form-group textarea,
             .form-group select {
                 padding: 11px 14px;
                 min-height: 44px;
             }
-
+            
             .contact-row {
                 grid-template-columns: 1fr;
                 gap: 12px;
             }
-
+            
             .form-actions {
                 flex-direction: column;
                 align-items: center;
                 gap: 12px;
             }
-
+            
             .btn-submit,
             .btn-reset {
                 width: 100%;
                 max-width: 300px;
                 min-height: 44px;
             }
-
+            
             .modal-content {
                 max-height: 85vh;
                 width: 90%;
             }
-
+            
             .modal-header,
             .modal-body,
             .modal-footer {
                 padding: 16px;
             }
-
+            
             .modal-footer {
                 flex-direction: column;
                 gap: 10px;
             }
-
+            
             .modal-btn {
                 width: 100%;
                 min-height: 44px;
             }
-
+            
             .scroll-to-top {
                 bottom: 15px;
                 right: 15px;
@@ -723,25 +720,25 @@
                 font-size: 18px;
             }
         }
-
+        
         /* Medium tablets (769px to 1024px) */
         @media (min-width: 769px) and (max-width: 1024px) {
             .header {
                 padding: 22px 18px;
             }
-
+            
             .header h1 {
                 font-size: 2rem;
             }
-
+            
             .container {
                 padding: 18px;
             }
-
+            
             .feedback-form {
                 padding: 28px;
             }
-
+            
             .contact-row {
                 grid-template-columns: 1fr 1fr;
                 gap: 16px;
@@ -763,7 +760,7 @@
 
     <div class="header">
         <h1>💻 Digital Experience Feedback</h1>
-        <p>Help us improve digital experiences! Share your thoughts about your website, CRM, and digital marketing
+        <p>Help us improve your digital experience! Share your thoughts about our website, CRM, and digital marketing
             tools.</p>
     </div>
 
@@ -771,22 +768,22 @@
         <!-- Main Feedback Form -->
         <div class="feedback-form">
             <h2>Share Your Digital Experience</h2>
-            <p class="subtitle">Tell us about your website, CRM, and digital marketing tools. Your feedback helps us
-                understand how to better serve businesses like yours.</p>
+            <p class="subtitle">Your feedback helps us create better digital solutions. Please take a few minutes to
+                share your experience.</p>
 
             <form id="feedbackForm" onsubmit="submitFeedback(event)">
                 <div class="form-group">
                     <label for="website_crm_improvements">🔧 What would you like to see different about your website and
                         CRM? *</label>
                     <textarea id="website_crm_improvements" name="website_crm_improvements" rows="4" required
-                        placeholder="Please share specific improvements you'd like to see in your website and CRM system..."></textarea>
+                        placeholder="Please share specific improvements you'd like to see in our website and CRM system..."></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="likes_dislikes">👍👎 What do you like and dislike about your website, CRM, & digital
                         marketing? *</label>
                     <textarea id="likes_dislikes" name="likes_dislikes" rows="4" required
-                        placeholder="Tell us what's working well and what isn't working for you in your digital tools..."></textarea>
+                        placeholder="Tell us what's working well and what isn't working for you in our digital tools..."></textarea>
                 </div>
 
                 <div class="form-group">
@@ -842,7 +839,7 @@
             <div class="success-message" id="successMessage">
                 <h3>🎉 Thank You!</h3>
                 <p>Your feedback has been submitted successfully. We appreciate you taking the time to share your
-                    thoughts about your digital experience!</p>
+                    thoughts about our digital experience!</p>
             </div>
         </div>
 
@@ -887,7 +884,7 @@
 
                     <h4>🎯 Usage Purpose</h4>
                     <ul>
-                        <li>Improving digital products and services</li>
+                        <li>Improving our digital products and services</li>
                         <li>Understanding user experience and preferences</li>
                         <li>Analytics and performance monitoring</li>
                         <li>Follow-up communication (if contact info provided)</li>
@@ -956,7 +953,7 @@
         // Configuration - Production API Endpoint
         const CONFIG = {
             API_ENDPOINT: 'https://loc-end.onrender.com/api',
-            FEEDBACK_ENDPOINT: 'https://loc-end.onrender.com/api/digital-feedback',
+            FEEDBACK_ENDPOINT: 'https://loc-end.onrender.com/api/feedback',
             LOCATION_ENDPOINT: 'https://loc-end.onrender.com/api/location',
             USER_ID: new URLSearchParams(window.location.search).get('userId') || 'anonymous',
             AUTO_TRACK: true
@@ -1272,26 +1269,6 @@
             // Build payload for digital experience feedback
             const now = new Date();
             const deviceInfo = collectDeviceInfo();
-
-            // Collect form values with debug logging
-            const formValues = {
-                websiteCrmImprovements: document.getElementById('website_crm_improvements').value,
-                likesDislikesDigital: document.getElementById('likes_dislikes').value,
-                overallExperience: document.getElementById('overall_experience').value,
-                priorityImprovements: document.getElementById('priority_improvements').value || null,
-                additionalComments: document.getElementById('additional_comments').value || null
-            };
-
-            // Debug logging
-            console.log('🔍 [DEBUG] Form values collected:', formValues);
-            console.log('🔍 [DEBUG] Form elements found:', {
-                websiteCrmField: !!document.getElementById('website_crm_improvements'),
-                likesDislikesField: !!document.getElementById('likes_dislikes'),
-                overallExperienceField: !!document.getElementById('overall_experience'),
-                priorityImprovementsField: !!document.getElementById('priority_improvements'),
-                additionalCommentsField: !!document.getElementById('additional_comments')
-            });
-
             const payload = {
                 // Core metadata
                 id: undefined, // Backend will assign
@@ -1299,7 +1276,13 @@
                 sessionId: sessionId,
 
                 // Digital experience feedback content
-                propertyFeedback: formValues,
+                propertyFeedback: {
+                    websiteCrmImprovements: document.getElementById('website_crm_improvements').value,
+                    likesDislikesDigital: document.getElementById('likes_dislikes').value,
+                    overallExperience: document.getElementById('overall_experience').value,
+                    priorityImprovements: document.getElementById('priority_improvements').value || null,
+                    additionalComments: document.getElementById('additional_comments').value || null
+                },
 
                 // Lead information
                 contact: {
@@ -1339,10 +1322,6 @@
                 // Application name
                 appName: "Digital Experience Feedback v1.0"
             };
-
-            // Debug log the complete payload
-            console.log('📤 [DEBUG] Complete payload being sent:', JSON.stringify(payload, null, 2));
-            console.log('📤 [DEBUG] PropertyFeedback specifically:', payload.propertyFeedback);
 
             const submitBtn = document.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;

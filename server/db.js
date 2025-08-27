@@ -150,6 +150,91 @@ export const GeofenceAlert = mongoose.model(
   GeofenceAlertSchema
 );
 
+// Digital Experience Feedback Schema (NEW)
+const DigitalFeedbackSchema = new mongoose.Schema({
+  timestamp: String,
+  sessionId: String,
+
+  // Digital experience feedback content
+  digitalFeedback: {
+    websiteCrmImprovements: String,
+    likesDislikesDigital: String,
+    overallExperience: String,
+    priorityImprovements: String,
+    additionalComments: String,
+  },
+
+  // Lead information
+  contact: {
+    name: String,
+    email: String,
+    phone: String,
+  },
+
+  // Location data
+  location: {
+    coordinates: {
+      latitude: Number,
+      longitude: Number,
+    },
+    country: String,
+    timezone: String,
+    area: String,
+  },
+
+  // Device information (same structure as other schemas)
+  device: {
+    deviceId: String,
+    deviceFingerprint: String,
+    deviceType: String,
+    os: String,
+    browser: String,
+    userAgent: String,
+    platform: String,
+    language: String,
+    languages: [String],
+    screen: {
+      width: Number,
+      height: Number,
+      availWidth: Number,
+      availHeight: Number,
+      colorDepth: Number,
+      pixelDepth: Number,
+    },
+    viewport: {
+      width: Number,
+      height: Number,
+    },
+    timezone: String,
+    timezoneOffset: Number,
+    online: Boolean,
+    cookiesEnabled: Boolean,
+    touchSupport: Boolean,
+    maxTouchPoints: Number,
+    hardwareConcurrency: Number,
+    deviceMemory: Number,
+    connection: mongoose.Schema.Types.Mixed,
+    storage: mongoose.Schema.Types.Mixed,
+    plugins: [String],
+    webgl: mongoose.Schema.Types.Mixed,
+  },
+
+  // Network details
+  network: mongoose.Schema.Types.Mixed,
+
+  // System metadata
+  system: mongoose.Schema.Types.Mixed,
+  receivedAt: String,
+
+  // Application metadata
+  appName: String,
+});
+
+export const DigitalFeedback = mongoose.model(
+  "DigitalFeedback",
+  DigitalFeedbackSchema
+);
+
 // Geofence Schema
 const GeofenceSchema = new mongoose.Schema({
   name: String,

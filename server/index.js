@@ -7,6 +7,7 @@ import {
   Location,
   GeofenceAlert,
   Geofence,
+  DigitalFeedback,
 } from "./db.js";
 
 const app = express();
@@ -211,6 +212,102 @@ app.post("/api/geofence-alert", async (req, res) => {
   }
 });
 
+// Digital Experience Feedback endpoint (NEW)
+app.post("/api/digital-feedback", async (req, res) => {
+  try {
+    console.log("🟢 [DIGITAL-FEEDBACK] === INCOMING REQUEST ===");
+    console.log(
+      "🟢 [DIGITAL-FEEDBACK] Headers:",
+      JSON.stringify(req.headers, null, 2)
+    );
+    console.log(
+      "🟢 [DIGITAL-FEEDBACK] Body received from UI:",
+      JSON.stringify(req.body, null, 2)
+    );
+
+    // Extract device info for logging
+    const deviceInfo = req.body.device || {};
+    console.log(
+      "📱 [DEVICE] Device ID:",
+      deviceInfo.deviceId || "❌ NOT PROVIDED"
+    );
+    console.log(
+      "📱 [DEVICE] Fingerprint:",
+      deviceInfo.deviceFingerprint || "❌ NOT PROVIDED"
+    );
+    console.log("📱 [DEVICE] Platform:", deviceInfo.platform || "Unknown");
+    console.log("📱 [DEVICE] User Agent:", deviceInfo.userAgent || "Unknown");
+
+    // Extract app name for logging
+    console.log("📱 [APP] App Name:", req.body.appName || "❌ NOT PROVIDED");
+
+    // Extract and log digital feedback content
+    const digitalFeedbackContent =
+      req.body.propertyFeedback || req.body.digitalFeedback || {};
+    console.log(
+      "💻 [DIGITAL-FEEDBACK] Content:",
+      JSON.stringify(digitalFeedbackContent, null, 2)
+    );
+    console.log(
+      "💻 [DIGITAL-FEEDBACK] Website/CRM Improvements:",
+      digitalFeedbackContent.websiteCrmImprovements || "Not provided"
+    );
+    console.log(
+      "💻 [DIGITAL-FEEDBACK] Likes/Dislikes:",
+      digitalFeedbackContent.likesDislikesDigital || "Not provided"
+    );
+    console.log(
+      "💻 [DIGITAL-FEEDBACK] Overall Experience:",
+      digitalFeedbackContent.overallExperience || "Not provided"
+    );
+
+    const networkInfo = getNetworkInfo(req);
+    console.log(
+      "🟢 [DIGITAL-FEEDBACK] Network info:",
+      JSON.stringify(networkInfo, null, 2)
+    );
+
+    // Map the data to match our new schema
+    const digitalFeedbackData = {
+      timestamp: req.body.timestamp,
+      sessionId: req.body.sessionId,
+      digitalFeedback: {
+        websiteCrmImprovements: digitalFeedbackContent.websiteCrmImprovements,
+        likesDislikesDigital: digitalFeedbackContent.likesDislikesDigital,
+        overallExperience: digitalFeedbackContent.overallExperience,
+        priorityImprovements: digitalFeedbackContent.priorityImprovements,
+        additionalComments: digitalFeedbackContent.additionalComments,
+      },
+      contact: req.body.contact,
+      location: req.body.location,
+      device: req.body.device,
+      network: networkInfo,
+      system: req.body.system,
+      receivedAt: networkInfo.serverReceivedAt,
+      appName: req.body.appName,
+    };
+
+    console.log(
+      "🟢 [DIGITAL-FEEDBACK] Final data being saved to DB:",
+      JSON.stringify(digitalFeedbackData, null, 2)
+    );
+
+    const digitalFeedback = new DigitalFeedback(digitalFeedbackData);
+    await digitalFeedback.save();
+
+    console.log("✅ [DIGITAL-FEEDBACK] Successfully saved to database");
+    res
+      .status(201)
+      .json({ message: "Digital feedback received", success: true });
+  } catch (err) {
+    console.error("❌ [DIGITAL-FEEDBACK] Error:", err.message);
+    console.error("❌ [DIGITAL-FEEDBACK] Full error:", err);
+    res
+      .status(500)
+      .json({ message: "Error saving digital feedback", error: err.message });
+  }
+});
+
 // Create a new geofence
 app.post("/api/geofence", async (req, res) => {
   try {
@@ -313,6 +410,20 @@ app.get("/api/geofence-alert", async (req, res) => {
     res
       .status(500)
       .json({ message: "Error fetching geofence alerts", error: err.message });
+  }
+});
+
+// Get all digital feedback entries (for admin/testing)
+app.get("/api/digital-feedback", async (req, res) => {
+  try {
+    const digitalFeedbacks = await DigitalFeedback.find().sort({
+      receivedAt: -1,
+    });
+    res.json(digitalFeedbacks);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching digital feedback", error: err.message });
   }
 });
 

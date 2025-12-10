@@ -13,6 +13,4 @@ services:
       - key: NODE_VERSION
         value: "20.11.1"
       - key: MONGO_URI
-        fromDatabase:
-          name: loc-end-db # Make sure this matches your database name on Render
-          property: connectionString
+        sync: false # Must be set manually in Render Dashboard

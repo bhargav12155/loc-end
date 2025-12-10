@@ -1,11 +1,20 @@
 import mongoose from "mongoose";
 
-const MONGO_URI =
-  process.env.MONGO_URI ||
-  "mongodb+srv://bhargav12155:Mydatabase%4001@cluster0.ehhoqo6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+  console.error("❌ FATAL ERROR: MONGO_URI environment variable is not set");
+  console.error("💡 Please set MONGO_URI in Render Dashboard → Environment tab");
+  process.exit(1);
+}
+
+console.log("🔄 Attempting to connect to MongoDB...");
 
 export function connectDB() {
-  return mongoose.connect(MONGO_URI);
+  return mongoose.connect(MONGO_URI, {
+    serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+    socketTimeoutMS: 45000,
+  });
 }
 
 // Feedback Schema

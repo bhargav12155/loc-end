@@ -13,9 +13,22 @@ import {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Allow all origins for maximum compatibility
-app.use(cors());
-app.options("*", cors()); // Enable pre-flight for all routes
+// Enhanced CORS configuration for GitHub Pages
+const corsOptions = {
+  origin: [
+    'https://bhargav12155.github.io',
+    'http://localhost:8100',
+    'http://localhost:4200',
+    /\.onrender\.com$/ // Allow Render preview deployments
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
@@ -31,6 +44,14 @@ connectDB()
     console.error("❌ MongoDB connection error:", err.message);
     process.exit(1);
   });
+
+// Log startup information (exclude health checks to reduce noise)
+app.use((req, res, next) => {
+  if (req.path !== '/api/health') {
+    console.log(`📨 ${req.method} ${req.path} - Origin: ${req.get('origin') || 'none'}`);
+  }
+  next();
+});
 
 // Feedback endpoint
 app.post("/api/feedback", async (req, res) => {

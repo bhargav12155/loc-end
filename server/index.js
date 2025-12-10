@@ -45,9 +45,11 @@ connectDB()
     process.exit(1);
   });
 
-// Log startup information
+// Log startup information (exclude health checks to reduce noise)
 app.use((req, res, next) => {
-  console.log(`📨 ${req.method} ${req.path} - Origin: ${req.get('origin') || 'none'}`);
+  if (req.path !== '/api/health') {
+    console.log(`📨 ${req.method} ${req.path} - Origin: ${req.get('origin') || 'none'}`);
+  }
   next();
 });
 

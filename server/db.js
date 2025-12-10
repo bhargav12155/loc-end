@@ -9,7 +9,6 @@ if (!MONGO_URI) {
 }
 
 console.log("🔄 Attempting to connect to MongoDB...");
-console.log("📍 MongoDB URI starts with:", MONGO_URI.substring(0, 20) + "...");
 
 export function connectDB() {
   return mongoose.connect(MONGO_URI, {
